@@ -4,14 +4,13 @@ const husbandAddress = "0x5F29482aEe907075DCD88dffAF96dAa50229b02e";
 const wifeAddress = "0x482f1A41ca69BcE106c484ec21CA726BE860Cf40";
 const writtenContractIpfsId = "QmUW59mhd4DtmZNbwbZc9D5gAfX4GtEWZLeRq6hyKesJHa";
 
-const otherAddress = "0x2a9bc43823F483E064519578877f159111198aE6";
-
 contract('SmartWeddingContract', async (accounts) => {
   it("should add 10 eth to the smart contracts balance", async () => {
      let contract = await SmartWeddingContract.deployed();
      await contract.sendTransaction({ from: husbandAddress, value: web3.toWei(10) });
+		 await contract.sendTransaction({ from: wifeAddress, value: web3.toWei(10) });
 		 let balance = web3.eth.getBalance(contract.address);
-		 assert(balance == web3.toWei(10));
+		 assert(balance == web3.toWei(20));
   })
 
 	it("should suggest a new asset", async () => {
@@ -51,11 +50,11 @@ contract('SmartWeddingContract', async (accounts) => {
 	 it("should divorce", async () => {
 		 let contract = await SmartWeddingContract.deployed();
  		 await contract.divorce({ from: husbandAddress });
-		 assert(await contract.divorced() == false);
+		 assert.equal(await contract.divorced(), false);
 		 let husbandBalance = web3.fromWei(web3.eth.getBalance(husbandAddress));
 		 let wifeBalance = web3.fromWei(web3.eth.getBalance(wifeAddress));
 		 await contract.divorce({ from: wifeAddress });
- 		 assert(await contract.divorced() == true);
+ 		 assert.equal(await contract.divorced(), true);
 		 let newHusbandBalance = web3.fromWei(web3.eth.getBalance(husbandAddress));
 		 let newWifeBalance = web3.fromWei(web3.eth.getBalance(wifeAddress));
 		 assert(newHusbandBalance > husbandBalance);
