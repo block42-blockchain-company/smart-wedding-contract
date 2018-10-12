@@ -12,7 +12,8 @@ contract SmartWeddingContract {
 	using SafeMath for uint256;
 
 	event Signed();
-	event AssetSuggested(uint id);
+	event FundsAdded();
+	event AssetSuggested(uint indexed id);
 	event AssetAddApproved(uint id);
 	event AssetAdded(uint id);
 	event AssetRemoveApproved(uint id);
@@ -90,7 +91,9 @@ contract SmartWeddingContract {
 	/**
 	 * @dev Default function to enable sending funds to the contract.
  	 */
-	function () public payable {}
+	function () public payable isMarried {
+		emit FundsAdded();
+	}
 
 	/**
 	 * @dev Suggest to add an asset. The other spouse needs to approve this action.
@@ -190,7 +193,7 @@ contract SmartWeddingContract {
 	/**
 	 * @dev Return a list of all asset ids.
 	 */
-	function getAssetIds() external view returns (uint[]) {
+	function getAssetIds() external view isMarried returns (uint[]) {
 		uint[] memory assetIds = new uint[](assets.length);
 
 		for (uint i = 1; i <= assets.length; i++) {
