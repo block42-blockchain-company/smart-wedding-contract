@@ -23,7 +23,7 @@ contract SmartWeddingContract {
 	event Sent(address wallet, uint amount);
 	event Received(address wallet, uint amount);
 
-	bool public signed = true;
+	bool public signed = false;
 	bool public divorced = false;
 
 	mapping (address => bool) public hasSigned;
