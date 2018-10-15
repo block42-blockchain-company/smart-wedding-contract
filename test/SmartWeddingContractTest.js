@@ -16,13 +16,13 @@ contract('SmartWeddingContract', async (accounts) => {
      let contract = await SmartWeddingContract.deployed();
 		 let assetIds = await contract.getAssetIds();
 		 assert(assetIds.length == 0);
-		 await contract.suggestAsset("any_asset_data", { from: husbandAddress });
+		 await contract.suggestAsset("new_asset", 60, 40, { from: husbandAddress });
 		 assetIds = await contract.getAssetIds();
 		 let latestAssetId = assetIds[assetIds.length - 1];
 		 assert(latestAssetId == 1);
 		 let latestAssetIndex = latestAssetId - 1;
 		 let asset = await contract.assets(latestAssetIndex);
-		 assert(asset[0] == "any_asset_data");
+		 assert(asset[0] == "new_asset");
 	 })
 
 	 it("should add the suggested asset", async () => {

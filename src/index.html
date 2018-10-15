@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smart Wedding Contract</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css"/>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <h1 class="text-center">Smart Wedding Contract</h1>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="card" style="height: 100%">
+            <div class="card-header">Contract</div>
+            <div class="card-body">
+              <h5 class="card-title">Address</h5>
+              <p id="contract-address" class="card-text">???</p>
+              <h5 class="card-title">Balance</h5>
+              <p class="card-text"><span id="contract-balance">???</span> ETH</p>
+              <h5 class="card-title">Spouses</h5>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">👨</span>
+                </div>
+                <input id="contract-husbandAddress" type="text" class="form-control" placeholder="???" aria-label="Husband Address" aria-describedby="basic-addon2" readonly>
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">👩</span>
+                </div>
+                <input id="contract-wifeAddress" type="text" class="form-control" placeholder="???" aria-label="Wife Address" aria-describedby="basic-addon2" readonly>
+              </div>
+              <p class="card-text">📁 <a id="contract-link" href="" target="_blank">Smart-Wedding-Contract.pdf</a></p>
+              <h5 class="card-title">Status</h5>
+              <div class="form-check">
+                <input id="contract-signed" class="form-check-input" type="checkbox" value="" disabled>
+                <label class="form-check-label" for="contract-signed">Signed</label>
+              </div>
+              <div class="form-check">
+                <input id="contract-divorced" class="form-check-input" type="checkbox" value="" disabled>
+                <label class="form-check-label" for="contract-divorced">Divorced</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="text-center">
+            <img id="wallet-image" src="/images/unknown.jpg" class="rounded-circle">
+          </div>
+          <div class="card">
+            <div class="card-header">Wallet</div>
+            <div class="card-body">
+              <h5 class="card-title">Address</h5>
+              <p id="wallet-address" class="card-text">???</p>
+              <h5 class="card-title">Balance</h5>
+              <p class="card-text"><span id="wallet-balance">???</span> ETH</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm text-center">
+          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#signModal">Sign</button>
+          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#suggestAssetModal">Suggest Asset</button>
+          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addAssetModal">Add Asset</button>
+          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#removeAssetModal">Remove Asset</button>
+          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#sendFundsModal">Send Funds</button>
+          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#payModal">Pay</button>
+          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#divorceModal">Divorce</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">Assets</div>
+            <div class="card-body">
+              <ul id="assets" class="list-group">
+                <!-- Assets -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">Events</div>
+            <div id="events" class="card-body">
+              <!-- Events -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="signModal" tabindex="-1" role="dialog" aria-labelledby="signModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="signModalLabel">Sign</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Do you want to sign the contract?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-primary" onclick="signContract()">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="suggestAssetModal" tabindex="-1" role="dialog" aria-labelledby="suggestAssetModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="suggestAssetModalLabel">Suggest Asset</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="was-validated">
+              <div class="input-group mb-3">
+                <input id="suggestAssetModal-asset" type="text" class="form-control" placeholder="Asset (e.g. Wohnung)" aria-label="Asset" aria-describedby="basic-addon1" required>
+                <div class="invalid-feedback">What do you want to add?</div>
+              </div>
+              <div class="input-group mb-3">
+                <label for="suggestAssetModal-range">Allocation</label>
+                <input id="suggestAssetModal-range" type="range" class="custom-range" value="50">
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">👨</span>
+                </div>
+                <input id="suggestAssetModal-husband" type="text" class="form-control" placeholder="Husband" aria-label="Husband" aria-describedby="basic-addon2" value="50" readonly>
+                <div class="input-group-append">
+                  <span class="input-group-text" id="basic-addon2">%</span>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">👩</span>
+                </div>
+                <input id="suggestAssetModal-wife" type="text" class="form-control" placeholder="Wife" aria-label="Wife" aria-describedby="basic-addon2" value="50" readonly>
+                <div class="input-group-append">
+                  <span class="input-group-text" id="basic-addon2">%</span>
+                </div>
+              </div>
+          </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onClick="suggestAsset()">Suggest</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="addAssetModal" tabindex="-1" role="dialog" aria-labelledby="addAssetModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addAssetModalLabel">Add Asset</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="addAssetModal-dropdown">Asset</label>
+              </div>
+              <select id="addAssetModal-dropdown" class="custom-select">
+                <!-- Options -->
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="addAsset()">Approve</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="removeAssetModal" tabindex="-1" role="dialog" aria-labelledby="removeAssetModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="removeAssetModalLabel">Remove Asset</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="addAssetModal-dropdown">Asset</label>
+              </div>
+              <select id="removeAssetModal-dropdown" class="custom-select">
+                <!-- Options -->
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="removeAsset()">Approve</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="sendFundsModal" tabindex="-1" role="dialog" aria-labelledby="sendFundsModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sendFundsModalLabel">Send Funds</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <input id="sendFundsModal-amount" type="text" class="form-control" placeholder="Funds (e.g. 4.27)" aria-label="Funds" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">ETH</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="sendFunds()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="payModal" tabindex="-1" role="dialog" aria-labelledby="payModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="payModalLabel">Pay</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <input id="payModal-address" type="text" class="form-control" placeholder="0x1234567890123456789012345678901234567890" aria-label="Address" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">Address</span>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <input id="payModal-amount" type="text" class="form-control" placeholder="Funds (e.g. 4.27)" aria-label="Funds" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">ETH</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="pay()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="divorceModal" tabindex="-1" role="dialog" aria-labelledby="divorceModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="divorceModalLabel">Divorce</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to divorce?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-primary" onclick="divorce()">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="errorModalLabel">💥 Error 💥</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="errorModalMessage" class="modal-body">
+            <!-- Error message -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- Ethereum -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@0.20.7/dist/web3.min.js" integrity="sha256-QBLUDyDq82B1cnZjAMn0hPdTo4Juu1S7/U1dgf22x8I=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/truffle-contract@3.0.6/dist/truffle-contract.min.js" integrity="sha256-NTGA6gJczN6M9sBxJV8GMhXhQ2jCtzstybGY1U2I7zs=" crossorigin="anonymous"></script>
+    <!-- Other -->
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.9.1/underscore.js" integrity="sha256-O4179En8zabOlPYBNvGp8cF0uh0vnSZpW4Q6Ul1h+8c=" crossorigin="anonymous"></script>
+    <!-- Custom -->
+    <script src="js/app.js"></script>
+  </body>
+
+</html>

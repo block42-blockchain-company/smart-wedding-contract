@@ -11,34 +11,39 @@ import "./zeppelin/math/SafeMath.sol";
 contract SmartWeddingContract {
 	using SafeMath for uint256;
 
-	event Signed();
-	event FundsAdded();
-	event AssetSuggested(uint indexed id);
-	event AssetAddApproved(uint id);
-	event AssetAdded(uint id);
-	event AssetRemoveApproved(uint id);
-	event AssetRemoved(uint id);
-	event DivorceApproved();
+	event Signed(address wallet);
+	event ContractSigned();
+	event AssetSuggested(string asset, address wallet);
+	event AssetAddApproved(string asset, address wallet);
+	event AssetAdded(string asset);
+	event AssetRemoveApproved(string asset, address wallet);
+	event AssetRemoved(string asset);
+	event DivorceApproved(address wallet);
 	event Divorced();
-	event FundsSent();
+	event Sent(address wallet, uint amount);
+	event Received(address wallet, uint amount);
 
+	bool public signed = true;
 	bool public divorced = false;
 
-	struct Asset {
-		string data;
-		bool added;
-		bool removed;
-		mapping (address => bool) addApprovals;
-		mapping (address => bool) removeApprovals;
-	}
+	mapping (address => bool) public hasSigned;
+	mapping (address => bool) public hasDivorced;
 
 	address public husbandAddress;
 	address public wifeAddress;
 	string public writtenContractId;
 
-	Asset[] public assets;
+	struct Asset {
+		string data;
+		uint husbandAllocation;
+		uint wifeAllocation;
+		bool added;
+		bool removed;
+		mapping (address => bool) hasApprovedAdd;
+		mapping (address => bool) hasApprovedRemove;
+	}
 
-	mapping (address => bool) public divorceApprovals;
+	Asset[] public assets;
 
 	/**
 	 * @dev Modifier that only allows spouse execution.
@@ -49,18 +54,18 @@ contract SmartWeddingContract {
 	}
 
 	/**
-	 * @dev Modifier that only allows execution if the marriage is still intact.
+	 * @dev Modifier that checks if the contract has been signed by both spouses.
  	 */
-	modifier isMarried() {
-		require(divorced == false, "Can not be called after dissolution");
+	modifier isSigned() {
+		require(signed == true, "Contract is not signed by both spouses yet");
 		_;
 	}
 
 	/**
-	 * @dev Modifier that validates an asset id.
+	 * @dev Modifier that only allows execution if the spouses have not been divorced.
  	 */
-	modifier isValidAssetId(uint _assetId) {
-		require(_assetId > 0 && _assetId <= assets.length, "Invalid asset id");
+	modifier isNotDivorced() {
+		require(divorced == false, "Can not be called after dissolution");
 		_;
 	}
 
@@ -76,101 +81,131 @@ contract SmartWeddingContract {
 	 * @param _writtenContractId IPFS hash of the written wedding contract.
 	 */
 	constructor(address _husbandAddress, address _wifeAddress, string _writtenContractId) public {
-		require(_husbandAddress != address(0), "Husbands address must not be null");
-		require(_wifeAddress != address(0), "Wife address must not be null");
+		require(_husbandAddress != address(0), "Husbands address must not be address zero");
+		require(_wifeAddress != address(0), "Wife address must not be address zero");
 		require(_husbandAddress != _wifeAddress, "Husband address must not equal wife address");
 		require(isSameString(_writtenContractId, ""), "Written contract id must not be empty");
 
 		husbandAddress = _husbandAddress;
 		wifeAddress = _wifeAddress;
 		writtenContractId = _writtenContractId;
-
-		emit Signed();
 	}
 
 	/**
 	 * @dev Default function to enable sending funds to the contract.
  	 */
-	function () public payable isMarried {
-		emit FundsAdded();
+	function () public payable isSigned isNotDivorced {
+		emit Received(msg.sender, msg.value);
+	}
+
+	/**
+	 * @dev Sign the contract.
+	 */
+	function signContract() external onlySpouse {
+		require(hasSigned[msg.sender] == false, "Spouse has already signed the contract");
+
+		hasSigned[msg.sender] = true;
+
+		emit Signed(msg.sender);
+
+		if (hasSigned[husbandAddress] && hasSigned[wifeAddress]) {
+			signed = true;
+			emit ContractSigned();
+		}
+	}
+
+	function pay(address _to, uint _amount) onlySpouse isSigned isNotDivorced {
+		require(_to != address(0), "Sending funds to address zero is forbidden");
+		require(_amount <= address(this).balance, "Not enough funds available");
+
+		// Send funds
+		require(_to.send(_amount));
+
+		emit Sent(_to, _amount);
 	}
 
 	/**
 	 * @dev Suggest to add an asset. The other spouse needs to approve this action.
-	 * @param _data The asset represented as an encrypted data string to ensure privacy.
+	 * @param _data The asset represented as a string.
+	 * @param _husbandAllocation Allocation of the husband.
+	 * @param _wifeAllocation Allocation of the wife.
 	 */
-	function suggestAsset(string _data) external onlySpouse isMarried {
+	function suggestAsset(string _data, uint _husbandAllocation, uint _wifeAllocation) external onlySpouse isSigned isNotDivorced {
 		require(isSameString(_data, ""), "Invalid asset");
 
 		// Add a new asset and instantly approve it by the sender
-		uint id = assets.push(Asset(_data, false, false));
+		uint id = assets.push(Asset(_data, _husbandAllocation, _wifeAllocation, false, false));
 		Asset storage asset = assets[id - 1];
-		asset.addApprovals[msg.sender] = true;
+		asset.hasApprovedAdd[msg.sender] = true;
 
-		emit AssetSuggested(id);
+		emit AssetSuggested(_data, msg.sender);
 	}
 
 	/**
 	 * @dev Approve the addition of a prior suggested asset. The other spouse needs to approve this action.
 	 */
-	function addAsset(uint _assetId) external onlySpouse isMarried isValidAssetId(_assetId) {
+	function addAsset(uint _assetId) external onlySpouse isSigned isNotDivorced {
+		require(_assetId > 0 && _assetId <= assets.length, "Invalid asset id");
+
 		Asset storage asset = assets[_assetId - 1];
 		require(asset.added == false, "Asset has already been added");
 		require(asset.removed == false, "Asset has already been removed");
-		require(asset.addApprovals[msg.sender] == false, "Adding this asset has already been approved by the spouse");
+		require(asset.hasApprovedAdd[msg.sender] == false, "Adding this asset has already been approved by the spouse");
 
 		// Approve addition by the sender
-		asset.addApprovals[msg.sender] = true;
+		asset.hasApprovedAdd[msg.sender] = true;
 
-		emit AssetAddApproved(_assetId);
+		emit AssetAddApproved(asset.data, msg.sender);
 
-		bool addApprovedByHusband = asset.addApprovals[husbandAddress];
-		bool addApprovedByWife = asset.addApprovals[wifeAddress];
+		bool addApprovedByHusband = asset.hasApprovedAdd[husbandAddress];
+		bool addApprovedByWife = asset.hasApprovedAdd[wifeAddress];
 
 		// Check if both spouses have approved the addition of the asset
 		if (addApprovedByHusband && addApprovedByWife) {
 			asset.added = true;
-			emit AssetAdded(_assetId);
+			emit AssetAdded(asset.data);
 		}
 	}
 
 	/**
 	 * @dev Approve the removal of a prior suggested/already added asset. The other spouse needs to approve this action.
 	 */
-	function removeAsset(uint _assetId) external onlySpouse isMarried isValidAssetId(_assetId) {
+	function removeAsset(uint _assetId) external onlySpouse isSigned isNotDivorced {
+		require(_assetId > 0 && _assetId <= assets.length, "Invalid asset id");
+
 		Asset storage asset = assets[_assetId - 1];
 		require(asset.added, "Asset has not been added yet");
 		require(asset.removed == false, "Asset has already been removed");
-		require(asset.removeApprovals[msg.sender] == false, "Removing this asset has already been approved by the spouse");
+		require(asset.hasApprovedRemove[msg.sender] == false, "Removing this asset has already been approved by the spouse");
 
 		// Approve removal by the sender
-		asset.removeApprovals[msg.sender] = true;
+		asset.hasApprovedRemove[msg.sender] = true;
 
-		emit AssetRemoveApproved(_assetId);
+		emit AssetRemoveApproved(asset.data, msg.sender);
 
-		bool removeApprovedByHusband = asset.removeApprovals[husbandAddress];
-		bool removeApprovedByWife = asset.removeApprovals[wifeAddress];
+		bool removeApprovedByHusband = asset.hasApprovedRemove[husbandAddress];
+		bool removeApprovedByWife = asset.hasApprovedRemove[wifeAddress];
 
 		// Check if both spouses have approved the removal of the asset
 		if (removeApprovedByHusband && removeApprovedByWife) {
 			asset.removed = true;
-			emit AssetRemoved(_assetId);
+			emit AssetRemoved(asset.data);
 		}
 	}
 
 	/**
 	 * @dev Request to divorce. The other spouse needs to approve this action.
 	 */
-	function divorce() external onlySpouse isMarried {
-		require(divorceApprovals[msg.sender] == false, "Spouse has already approved to divorce");
+	function divorce() external onlySpouse isSigned isNotDivorced {
+		require(hasDivorced[msg.sender] == false, "Spouse has already approved to divorce");
 
 		// Approve to divorce by the sender
-		divorceApprovals[msg.sender] = true;
+		hasDivorced[msg.sender] = true;
 
-		bool divorceApprovedByHusband = divorceApprovals[husbandAddress];
-		bool divorceApprovedByWife = divorceApprovals[wifeAddress];
+		bool divorceApprovedByHusband = hasDivorced[husbandAddress];
+		bool divorceApprovedByWife = hasDivorced[wifeAddress];
 
-		emit DivorceApproved();
+		emit DivorceApproved(msg.sender);
 
 		// Check if both spouses have approved to divorce
 		if (divorceApprovedByHusband && divorceApprovedByWife) {
@@ -183,9 +218,9 @@ contract SmartWeddingContract {
 				// Split the remaining balance of the contract 50:50
 				uint balancePerSpouse = balance.div(2);
 				require(husbandAddress.send(balancePerSpouse));
+				emit Sent(husbandAddress, balancePerSpouse);
 				require(wifeAddress.send(balancePerSpouse));
-
-				emit FundsSent();
+				emit Sent(wifeAddress, balancePerSpouse);
 			}
 		}
 	}
@@ -193,7 +228,7 @@ contract SmartWeddingContract {
 	/**
 	 * @dev Return a list of all asset ids.
 	 */
-	function getAssetIds() external view isMarried returns (uint[]) {
+	function getAssetIds() external view onlySpouse returns (uint[]) {
 		uint[] memory assetIds = new uint[](assets.length);
 
 		for (uint i = 1; i <= assets.length; i++) {
