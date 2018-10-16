@@ -29,14 +29,14 @@
 
       <div class="row">
         <div class="col-sm-6">
-          <div class="card" style="height: 100%">
-            <div class="card-header">Contract</div>
+          <div class="card" style="height:100%;">
+            <div class="card-header">Smart Contract</div>
             <div class="card-body">
-              <h5 class="card-title">Address</h5>
+              <h5 class="card-title">Adresse</h5>
               <p id="contract-address" class="card-text">???</p>
-              <h5 class="card-title">Balance</h5>
+              <h5 class="card-title">Kontostand</h5>
               <p class="card-text"><span id="contract-balance">???</span> ETH</p>
-              <h5 class="card-title">Spouses</h5>
+              <h5 class="card-title">Ehepartner</h5>
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">👨</span>
@@ -53,11 +53,11 @@
               <h5 class="card-title">Status</h5>
               <div class="form-check">
                 <input id="contract-signed" class="form-check-input" type="checkbox" value="" disabled>
-                <label class="form-check-label" for="contract-signed">Signed</label>
+                <label class="form-check-label" for="contract-signed">Unterzeichnet</label>
               </div>
               <div class="form-check">
                 <input id="contract-divorced" class="form-check-input" type="checkbox" value="" disabled>
-                <label class="form-check-label" for="contract-divorced">Divorced</label>
+                <label class="form-check-label" for="contract-divorced">Geschieden</label>
               </div>
             </div>
           </div>
@@ -70,9 +70,11 @@
           <div class="card">
             <div class="card-header">Wallet</div>
             <div class="card-body">
-              <h5 class="card-title">Address</h5>
+              <h5 class="card-title">Name</h5>
+              <p id="wallet-name" class="card-text">???</p>
+              <h5 class="card-title">Adresse</h5>
               <p id="wallet-address" class="card-text">???</p>
-              <h5 class="card-title">Balance</h5>
+              <h5 class="card-title">Kontostand</h5>
               <p class="card-text"><span id="wallet-balance">???</span> ETH</p>
             </div>
           </div>
@@ -80,14 +82,14 @@
       </div>
 
       <div class="row">
-        <div class="col-sm text-center">
-          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#signModal">Sign</button>
-          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#suggestAssetModal">Suggest Asset</button>
-          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addAssetModal">Add Asset</button>
-          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#removeAssetModal">Remove Asset</button>
-          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#sendFundsModal">Send Funds</button>
-          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#payModal">Pay</button>
-          <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#divorceModal">Divorce</button>
+        <div id="actions" class="col-sm text-center">
+          <button id="button-signContract" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#signContractModal">Unterzeichnen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#suggestAssetModal">Asset hinzufügen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#addAssetModal">Asset bestätigen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#removeAssetModal">Asset entfernen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#sendFundsModal">Einzahlen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#payModal">Bezahlen</button>
+          <button id="button-divorce" type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#divorceModal">Scheidung einreichen</button>
         </div>
       </div>
 
@@ -116,11 +118,11 @@
       </div>
     </div>
 
-    <div class="modal fade" id="signModal" tabindex="-1" role="dialog" aria-labelledby="signModalLabel" aria-hidden="true">
+    <div class="modal fade" id="signContractModal" tabindex="-1" role="dialog" aria-labelledby="signContractModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="signModalLabel">Sign</h5>
+            <h5 class="modal-title" id="signContractModalLabel">Sign</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -151,6 +153,7 @@
                 <input id="suggestAssetModal-asset" type="text" class="form-control" placeholder="Asset (e.g. Wohnung)" aria-label="Asset" aria-describedby="basic-addon1" required>
                 <div class="invalid-feedback">What do you want to add?</div>
               </div>
+              <hr>
               <div class="input-group mb-3">
                 <label for="suggestAssetModal-range">Allocation</label>
                 <input id="suggestAssetModal-range" type="range" class="custom-range" value="50">
@@ -317,7 +320,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="errorModalLabel">💥 Error 💥</h5>
+            <h5 class="modal-title" id="errorModalLabel">Error</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -336,10 +339,10 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <!-- Ethereum -->
+    <!-- Blockchain -->
     <script src="https://cdn.jsdelivr.net/npm/web3@0.20.7/dist/web3.min.js" integrity="sha256-QBLUDyDq82B1cnZjAMn0hPdTo4Juu1S7/U1dgf22x8I=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/truffle-contract@3.0.6/dist/truffle-contract.min.js" integrity="sha256-NTGA6gJczN6M9sBxJV8GMhXhQ2jCtzstybGY1U2I7zs=" crossorigin="anonymous"></script>
-    <!-- Other -->
+    <!-- Helper -->
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.9.1/underscore.js" integrity="sha256-O4179En8zabOlPYBNvGp8cF0uh0vnSZpW4Q6Ul1h+8c=" crossorigin="anonymous"></script>
     <!-- Custom -->
     <script src="js/app.js"></script>
