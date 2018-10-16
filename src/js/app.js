@@ -45,10 +45,10 @@ App = {
   },
 
 	initListeners: function() {
-		$("#addAssetModal-range").change(function() {
-			const value = $("#addAssetModal-range").val();
-			$("#addAssetModal-husband").val(value);
-			$("#addAssetModal-wife").val(100 - value);
+		$("#proposeAssetModal-range").change(function() {
+			const value = $("#proposeAssetModal-range").val();
+			$("#proposeAssetModal-husband").val(value);
+			$("#proposeAssetModal-wife").val(100 - value);
 		});
 
 		return App.updateUi();
@@ -120,7 +120,7 @@ App = {
 			// Update assets
 			contract.getAssetIds().then(function(assetIds) {
 				$("#assets").empty();
-				$("#addAssetModal-dropdown").empty();
+				$("#approveAssetModal-dropdown").empty();
 				$("#removeAssetModal-dropdown").empty();
 
 				_.each(assetIds, function(idAsBigNumber) {
@@ -146,7 +146,7 @@ App = {
 						}
 
 						$("#assets").append(assetListItem);
-						$("#addAssetModal-dropdown").append(new Option(text, assetId));
+						$("#approveAssetModal-dropdown").append(new Option(text, assetId));
 						// Only append already assests which have not been removed yet
 						if (added && !removed) $("#removeAssetModal-dropdown").append(new Option(text, assetId));
 					});
@@ -193,7 +193,7 @@ App = {
 						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat den Vertrag unterzeichnet!");
 						break;
 						case "ContractSigned":
-						eventListItem = updateEventListItem(eventListItem, "success", "Beide Ehepartnern haben den Vertrag unterzeichnet!");
+						eventListItem = updateEventListItem(eventListItem, "success", "Beide Ehepartner haben den Vertrag unterzeichnet!");
 						break;
 						case "AssetProposed":
 						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat ein neues Asset vorgeschlagen: " + asset);
