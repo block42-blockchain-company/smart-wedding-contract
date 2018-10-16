@@ -45,24 +45,16 @@ App = {
   },
 
 	initListeners: function() {
-		$("#suggestAssetModal-range").change(function() {
-			const value = $("#suggestAssetModal-range").val();
-			$("#suggestAssetModal-husband").val(value);
-			$("#suggestAssetModal-wife").val(100 - value);
+		$("#addAssetModal-range").change(function() {
+			const value = $("#addAssetModal-range").val();
+			$("#addAssetModal-husband").val(value);
+			$("#addAssetModal-wife").val(100 - value);
 		});
 
 		return App.updateUi();
 	},
 
 	updateUi: function() {
-		function updateAssetListItem(htmlString, asset, type, state) {
-			return htmlString.replace("__ASSET__", asset).replace("__TYPE__", type).replace("__STATE__", state);
-		}
-
-		function updateEventListItem(htmlString, type, text) {
-			return htmlString.replace("__TYPE__", type).replace("__TEXT__", text);
-		}
-
 		App.contracts.SmartWeddingContract.deployed().then(function(contract) {
 			// Update contract address and balance
 			web3.eth.getBalance(contract.address, function(error, balanceWei) {
@@ -108,13 +100,19 @@ App = {
 					// Update action button states
 					if (divorced) {
 						$(".action-button").removeClass("btn-primary").addClass("btn-secondary");
+						$(".action-button").attr("disabled", true);
 					} else if (!signed) {
 						$(".action-button").removeClass("btn-primary").addClass("btn-secondary");
+						$(".action-button").attr("disabled", true);
 						$("#button-signContract").removeClass("btn-secondary").addClass("btn-success");
+						$("#button-signContract").attr("disabled", false);
 					} else {
 						$(".action-button").removeClass("btn-secondary").addClass("btn-primary");
+						$(".action-button").attr("disabled", false);
 						$("#button-signContract").removeClass("btn-success").addClass("btn-secondary");
+						$("#button-signContract").attr("disabled", true);
 						$("#button-divorce").removeClass("btn-secondary").addClass("btn-danger");
+						$("#button-divorce").attr("disabled", false);
 					}
 				});
 			});
@@ -144,7 +142,7 @@ App = {
 						} else if (added == true) {
 							assetListItem = updateAssetListItem(assetListItem, formattedText, "success", "Hinzugefügt");
 						} else {
-							assetListItem = updateAssetListItem(assetListItem, formattedText, "warning", "Genehmigung ausständig");
+							assetListItem = updateAssetListItem(assetListItem, formattedText, "warning", "Genehmigung ausstehend");
 						}
 
 						$("#assets").append(assetListItem);
@@ -155,11 +153,30 @@ App = {
 				});
 			});
 
-			// Update events
+			return App.initPolling();
+		});
+	},
+
+	initPolling: function() {
+		App.updateEvents();
+
+		const eventInterval = setInterval(function() {
+			if (App.updateEvents !== undefined) {
+				App.updateEvents();
+			}
+		}, 3000);
+	},
+
+	updateEvents: function() {
+		// Update events
+		App.contracts.SmartWeddingContract.deployed().then(function(contract) {
 			contract.allEvents({ fromBlock: 0, toBlock: "latest" }).get(function (error, result) {
 				const events = result.reverse();
 
-				console.log(result);
+				// Check if no update is required
+				if (events.length == $("#events").children().length) {
+					return;
+				}
 
 				$("#events").empty();
 
@@ -171,41 +188,39 @@ App = {
 					const amount = eventObject.args["amount"];
 					const value = web3.fromWei(web3.toBigNumber(amount).toNumber());
 
-					const nameOrAddress = addressToName(address, false);
-
 					switch (eventObject.event) {
 						case "Signed":
-						eventListItem = updateEventListItem(eventListItem, "warning", nameOrAddress + " hat den Vertrag unterzeichnet!");
+						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat den Vertrag unterzeichnet!");
 						break;
 						case "ContractSigned":
 						eventListItem = updateEventListItem(eventListItem, "success", "Beide Ehepartnern haben den Vertrag unterzeichnet!");
 						break;
-						case "AssetSuggested":
-						eventListItem = updateEventListItem(eventListItem, "warning", nameOrAddress + " hat ein neues Asset vorgeschlagen: " + asset);
+						case "AssetProposed":
+						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat ein neues Asset vorgeschlagen: " + asset);
 						break;
 						case "AssetAddApproved":
-						eventListItem = updateEventListItem(eventListItem, "warning", nameOrAddress + " hat das Asset genehmigt: " + asset);
+						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat das Asset genehmigt: " + asset);
 						break;
 						case "AssetAdded":
 						eventListItem = updateEventListItem(eventListItem, "success", "Asset wurde hinzugefügt: " + asset);
 						break;
 						case "AssetRemoveApproved":
-						eventListItem = updateEventListItem(eventListItem, "warning", nameOrAddress + " hat dem Entfernen des Assets zugestimmt: " + asset);
+						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat dem Entfernen des Assets zugestimmt: " + asset);
 						break;
 						case "AssetRemoved":
 						eventListItem = updateEventListItem(eventListItem, "danger", "Asset wurde entfernt: " + asset);
 						break;
 						case "DivorceApproved":
-						eventListItem = updateEventListItem(eventListItem, "warning", nameOrAddress + " hat die Scheidung eingereicht!");
+						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat die Scheidung eingereicht!");
 						break;
 						case "Divorced":
 						eventListItem = updateEventListItem(eventListItem, "danger", "Beide Ehepartner haben der Scheidung zugestimmt!");
 						break;
 						case "Sent":
-						eventListItem = updateEventListItem(eventListItem, "danger", value + " ETH wurden an " + nameOrAddress + " gesendet!");
+						eventListItem = updateEventListItem(eventListItem, "danger", value + " ETH wurden an " + addressToName(address, true) + " gesendet!");
 						break;
 						case "Received":
-						eventListItem = updateEventListItem(eventListItem, "success", value + " ETH wurden von " + nameOrAddress + " empfangen!");
+						eventListItem = updateEventListItem(eventListItem, "success", value + " ETH wurden von " + addressToName(address, true) + " empfangen!");
 						break;
 					}
 
@@ -239,53 +254,53 @@ function signContract() {
 	}).catch(function(error) {
 		console.log(error);
 		$('#signContractModal').modal('hide');
-		showErrorModal("Signing the contract failed!");
+		showErrorModal("Das Unterzeichnen ist fehlgeschlagen!");
 	});
 }
 
-function suggestAsset() {
-	const asset = $("#suggestAssetModal-asset").val();
-	const husbandAllocation = $("#suggestAssetModal-husband").val();
-	const wifeAllocation = $("#suggestAssetModal-wife").val();
+function proposeAsset() {
+	const asset = $("#proposeAssetModal-asset").val();
+	const husbandAllocation = $("#proposeAssetModal-husband").val();
+	const wifeAllocation = $("#proposeAssetModal-wife").val();
 
 	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
-		console.log("Action: Suggest Asset -> " + asset);
-		return contract.suggestAsset(asset, husbandAllocation, wifeAllocation, { from: App.userAccount });
+		console.log("Action: Propose Asset -> " + asset);
+		return contract.proposeAsset(asset, husbandAllocation, wifeAllocation, { from: App.userAccount });
 	}).then(function(result) {
 		console.log(result);
-		$('#suggestAssetModal').modal('hide');
-		$("#suggestAssetModal-asset").val("");
-		$("#suggestAssetModal-husband").val(50);
-		$("#suggestAssetModal-wife").val(50);
-		$("#suggestAssetModal-range").val(50);
+		$('#proposeAssetModal').modal('hide');
+		$("#proposeAssetModal-asset").val("");
+		$("#proposeAssetModal-range").val(50);
+		$("#proposeAssetModal-husband").val(50);
+		$("#proposeAssetModal-wife").val(50);
 		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
-		$('#suggestAssetModal').modal('hide');
-		$("#suggestAssetModal-asset").val("");
-		$("#suggestAssetModal-husband").val(50);
-		$("#suggestAssetModal-wife").val(50);
-		$("#suggestAssetModal-range").val(50);
-		showErrorModal("Sugessting the asset failed!");
+		$('#proposeAssetModal').modal('hide');
+		$("#proposeAssetModal-asset").val("");
+		$("#proposeAssetModal-range").val(50);
+		$("#proposeAssetModal-husband").val(50);
+		$("#proposeAssetModal-wife").val(50);
+		showErrorModal("Das Hinzufügen des Assets ist fehlgeschlagen!");
 	});
 }
 
-function addAsset() {
-	const assetId = $("#addAssetModal-dropdown").val();
+function approveAsset() {
+	const assetId = $("#approveAssetModal-dropdown").val();
 
 	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
-		console.log("Action: Add asset with id -> " + assetId);
-		return contract.addAsset(assetId, { from: App.userAccount });
+		console.log("Action: Approve asset with id -> " + assetId);
+		return contract.approveAsset(assetId, { from: App.userAccount });
 	}).then(function(result) {
 		console.log(result);
-		$('#addAssetModal').modal('hide');
-		$("#addAssetModal-assetId").val("");
+		$('#approveAssetModal').modal('hide');
+		$("#approveAssetModal-assetId").val("");
 		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
-		$('#addAssetModal').modal('hide');
-		$("#addAssetModal-assetId").val("");
-		showErrorModal("Approving to add the asset failed!");
+		$('#approveAssetModal').modal('hide');
+		$("#approveAssetModal-assetId").val("");
+		showErrorModal("Das Bestätigen des Assets ist fehlgeschlagen!");
 	});
 }
 
@@ -304,28 +319,28 @@ function removeAsset() {
 		console.log(error);
 		$('#removeAssetModal').modal('hide');
 		$("#removeAssetModal-assetId").val("");
-		showErrorModal("Approving to remove the asset failed!");
+		showErrorModal("Das Bestätigen der Entfernung des Assets ist fehlgeschlagen!");
 	});
 }
 
-function sendFunds() {
-	const amount = $("#sendFundsModal-amount").val();
+function payIn() {
+	const amount = $("#payInModal-amount").val();
 
 	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
-		console.log("Action: Send Funds -> " + amount + " ETH");
+		console.log("Action: PayIn -> " + amount + " ETH");
 		return web3.eth.sendTransaction({ from: App.userAccount, to: contract.address, value: web3.toWei(amount) }, function(error, hash) {
 			console.log(hash);
 
 			if (error) {
 				console.log(error);
-				$('#sendFundsModal').modal('hide');
-				$("#sendFundsModal-amount").val("");
-				showErrorModal("Sending funds failed!");
+				$('#payInModal').modal('hide');
+				$("#payInModal-amount").val("");
+				showErrorModal("Die Einzahlung ist fehlgeschlagen!");
 				return;
 			}
 
-			$('#sendFundsModal').modal('hide');
-			$("#sendFundsModal-amount").val("");
+			$('#payInModal').modal('hide');
+			$("#payInModal-amount").val("");
 			App.updateUi();
 		});
 	});
@@ -336,7 +351,7 @@ function pay() {
 	const amount = $("#payModal-amount").val();
 
 	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
-		console.log("Action: Send funds to " + address + " -> " + amount + " ETH");
+		console.log("Action: Pay -> " + address + ", " + amount + " ETH");
 		return contract.pay(address, web3.toWei(amount), { from: App.userAccount });
 	}).then(function(result) {
 		console.log(result);
@@ -349,7 +364,7 @@ function pay() {
 		$('#payModal').modal('hide');
 		$("#payModal-address").val("");
 		$("#payModal-amount").val("");
-		showErrorModal("Payment failed!");
+		showErrorModal("Die Bezahlung ist fehlgeschlagen!");
 	});
 }
 
@@ -364,17 +379,25 @@ function divorce() {
 	}).catch(function(error) {
 		console.log(error);
 		$('#divorceModal').modal('hide');
-		showErrorModal("Request to divorce failed!");
+		showErrorModal("Das Einreichen der Scheidung ist fehlgeschlagen!");
 	});
+}
+
+function showErrorModal(message) {
+	$('#errorModalMessage').text(message);
+	$('#errorModal').modal('show');
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------------------------------------------------
 
-function showErrorModal(message) {
-	$('#errorModalMessage').text(message);
-	$('#errorModal').modal('show');
+function updateAssetListItem(htmlString, asset, type, state) {
+	return htmlString.replace("__ASSET__", asset).replace("__TYPE__", type).replace("__STATE__", state);
+}
+
+function updateEventListItem(htmlString, type, text) {
+	return htmlString.replace("__TYPE__", type).replace("__TEXT__", text);
 }
 
 function addressToImageUrl(address) {

@@ -83,11 +83,11 @@
 
       <div class="row">
         <div id="actions" class="col-sm text-center">
-          <button id="button-signContract" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#signContractModal">Unterzeichnen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#suggestAssetModal">Asset hinzufügen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#addAssetModal">Asset bestätigen</button>
+          <button id="button-signContract" type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#signContractModal">Unterzeichnen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#proposeAssetModal">Asset hinzufügen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#approveAssetModal">Asset bestätigen</button>
           <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#removeAssetModal">Asset entfernen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#sendFundsModal">Einzahlen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#payInModal">Einzahlen</button>
           <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#payModal">Bezahlen</button>
           <button id="button-divorce" type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#divorceModal">Scheidung einreichen</button>
         </div>
@@ -118,31 +118,31 @@
       </div>
     </div>
 
+    <!-- Modals -->
+
     <div class="modal fade" id="signContractModal" tabindex="-1" role="dialog" aria-labelledby="signContractModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="signContractModalLabel">Sign</h5>
+            <h5 class="modal-title" id="signContractModalLabel">Unterzeichnen</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            Do you want to sign the contract?
-          </div>
+          <div class="modal-body">Bist du sicher, dass du den Vertrag unterzeichnen möchtest?</div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-            <button type="button" class="btn btn-primary" onclick="signContract()">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Nein</button>
+            <button type="button" class="btn btn-primary" onclick="signContract()">Ja</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="suggestAssetModal" tabindex="-1" role="dialog" aria-labelledby="suggestAssetModalLabel" aria-hidden="true">
+    <div class="modal fade" id="proposeAssetModal" tabindex="-1" role="dialog" aria-labelledby="proposeAssetModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="suggestAssetModalLabel">Suggest Asset</h5>
+            <h5 class="modal-title" id="proposeAssetModalLabel">Asset hinzufügen</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -150,19 +150,19 @@
           <div class="modal-body">
             <form class="was-validated">
               <div class="input-group mb-3">
-                <input id="suggestAssetModal-asset" type="text" class="form-control" placeholder="Asset (e.g. Wohnung)" aria-label="Asset" aria-describedby="basic-addon1" required>
-                <div class="invalid-feedback">What do you want to add?</div>
+                <input id="proposeAssetModal-asset" type="text" class="form-control" placeholder="Asset" aria-label="Asset" aria-describedby="basic-addon1" required>
+                <div class="invalid-feedback">Was möchtest du hinzufügen?</div>
               </div>
               <hr>
               <div class="input-group mb-3">
-                <label for="suggestAssetModal-range">Allocation</label>
-                <input id="suggestAssetModal-range" type="range" class="custom-range" value="50">
+                <label for="proposeAssetModal-range">Aufteilung</label>
+                <input id="proposeAssetModal-range" type="range" class="custom-range" value="50">
               </div>
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">👨</span>
                 </div>
-                <input id="suggestAssetModal-husband" type="text" class="form-control" placeholder="Husband" aria-label="Husband" aria-describedby="basic-addon2" value="50" readonly>
+                <input id="proposeAssetModal-husband" type="text" class="form-control" placeholder="Husband" aria-label="Husband" aria-describedby="basic-addon2" value="50" readonly>
                 <div class="input-group-append">
                   <span class="input-group-text" id="basic-addon2">%</span>
                 </div>
@@ -171,7 +171,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text">👩</span>
                 </div>
-                <input id="suggestAssetModal-wife" type="text" class="form-control" placeholder="Wife" aria-label="Wife" aria-describedby="basic-addon2" value="50" readonly>
+                <input id="proposeAssetModal-wife" type="text" class="form-control" placeholder="Wife" aria-label="Wife" aria-describedby="basic-addon2" value="50" readonly>
                 <div class="input-group-append">
                   <span class="input-group-text" id="basic-addon2">%</span>
                 </div>
@@ -179,18 +179,18 @@
           </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" onClick="suggestAsset()">Suggest</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-primary" onClick="proposeAsset()">Hinzufügen</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="addAssetModal" tabindex="-1" role="dialog" aria-labelledby="addAssetModalLabel" aria-hidden="true">
+    <div class="modal fade" id="approveAssetModal" tabindex="-1" role="dialog" aria-labelledby="approveAssetModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="addAssetModalLabel">Add Asset</h5>
+            <h5 class="modal-title" id="approveAssetModalLabel">Asset bestätigen</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -198,16 +198,16 @@
           <div class="modal-body">
             <div class="input-group mb-3">
               <div class="input-group-prepend">
-                <label class="input-group-text" for="addAssetModal-dropdown">Asset</label>
+                <label class="input-group-text" for="approveAssetModal-dropdown">Asset</label>
               </div>
-              <select id="addAssetModal-dropdown" class="custom-select">
+              <select id="approveAssetModal-dropdown" class="custom-select">
                 <!-- Options -->
               </select>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="addAsset()">Approve</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-primary" onclick="approveAsset()">Bestätigen</button>
           </div>
         </div>
       </div>
@@ -217,7 +217,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="removeAssetModalLabel">Remove Asset</h5>
+            <h5 class="modal-title" id="removeAssetModalLabel">Asset entfernen</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -233,33 +233,33 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="removeAsset()">Approve</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-primary" onclick="removeAsset()">Entfernen</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="sendFundsModal" tabindex="-1" role="dialog" aria-labelledby="sendFundsModalLabel" aria-hidden="true">
+    <div class="modal fade" id="payInModal" tabindex="-1" role="dialog" aria-labelledby="payInModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="sendFundsModalLabel">Send Funds</h5>
+            <h5 class="modal-title" id="payInModalLabel">Einzahlen</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
             <div class="input-group mb-3">
-              <input id="sendFundsModal-amount" type="text" class="form-control" placeholder="Funds (e.g. 4.27)" aria-label="Funds" aria-describedby="basic-addon2">
+              <input id="payInModal-amount" type="text" class="form-control" placeholder="Betrag" aria-label="Betrag" aria-describedby="basic-addon2">
               <div class="input-group-append">
                 <span class="input-group-text" id="basic-addon2">ETH</span>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="sendFunds()">Send</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-primary" onclick="payIn()">Einzahlen</button>
           </div>
         </div>
       </div>
@@ -269,7 +269,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="payModalLabel">Pay</h5>
+            <h5 class="modal-title" id="payModalLabel">Bezahlen</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -278,19 +278,19 @@
             <div class="input-group mb-3">
               <input id="payModal-address" type="text" class="form-control" placeholder="0x1234567890123456789012345678901234567890" aria-label="Address" aria-describedby="basic-addon2">
               <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">Address</span>
+                <span class="input-group-text" id="basic-addon2">Adresse</span>
               </div>
             </div>
             <div class="input-group mb-3">
-              <input id="payModal-amount" type="text" class="form-control" placeholder="Funds (e.g. 4.27)" aria-label="Funds" aria-describedby="basic-addon2">
+              <input id="payModal-amount" type="text" class="form-control" placeholder="Betrag" aria-label="Betrag" aria-describedby="basic-addon2">
               <div class="input-group-append">
                 <span class="input-group-text" id="basic-addon2">ETH</span>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="pay()">Send</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-primary" onclick="pay()">Bezahlen</button>
           </div>
         </div>
       </div>
@@ -300,17 +300,15 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="divorceModalLabel">Divorce</h5>
+            <h5 class="modal-title" id="divorceModalLabel">Scheidung einreichen</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            Are you sure you want to divorce?
-          </div>
+          <div class="modal-body">Bist du sicher, dass du dich scheiden lassen möchtest?</div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-            <button type="button" class="btn btn-primary" onclick="divorce()">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Nein</button>
+            <button type="button" class="btn btn-primary" onclick="divorce()">Ja</button>
           </div>
         </div>
       </div>
@@ -320,7 +318,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="errorModalLabel">Error</h5>
+            <h5 class="modal-title" id="errorModalLabel">Fehler</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -329,7 +327,7 @@
             <!-- Error message -->
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Schließen</button>
           </div>
         </div>
       </div>
