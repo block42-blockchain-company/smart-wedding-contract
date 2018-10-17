@@ -4,7 +4,15 @@ const husbandAddress = "0x5F29482aEe907075DCD88dffAF96dAa50229b02e";
 const wifeAddress = "0x482f1A41ca69BcE106c484ec21CA726BE860Cf40";
 
 contract('SmartWeddingContract', async (accounts) => {
-  it("should add 10 eth to the smart contracts balance", async () => {
+	it("should sign the contract by both spouses", async () => {
+		const contract = await SmartWeddingContract.deployed();
+		await contract.signContract({ from: husbandAddress });
+		await contract.signContract({ from: wifeAddress });
+		const signed = await contract.signed();
+		assert(signed == true);
+	})
+
+  it("should pay in 10 eth (each) to the contract", async () => {
      let contract = await SmartWeddingContract.deployed();
      await contract.sendTransaction({ from: husbandAddress, value: web3.toWei(10) });
 		 await contract.sendTransaction({ from: wifeAddress, value: web3.toWei(10) });
@@ -12,12 +20,12 @@ contract('SmartWeddingContract', async (accounts) => {
 		 assert(balance == web3.toWei(20));
   })
 
-	it("should suggest a new asset", async () => {
+	it("should propose an asset", async () => {
      let contract = await SmartWeddingContract.deployed();
-		 let assetIds = await contract.getAssetIds();
+		 let assetIds = await contract.getAssetIds({ from: husbandAddress });
 		 assert(assetIds.length == 0);
-		 await contract.suggestAsset("new_asset", 60, 40, { from: husbandAddress });
-		 assetIds = await contract.getAssetIds();
+		 await contract.proposeAsset("new_asset", 60, 40, { from: husbandAddress });
+		 assetIds = await contract.getAssetIds({ from: husbandAddress });
 		 let latestAssetId = assetIds[assetIds.length - 1];
 		 assert(latestAssetId == 1);
 		 let latestAssetIndex = latestAssetId - 1;
@@ -25,25 +33,25 @@ contract('SmartWeddingContract', async (accounts) => {
 		 assert(asset[0] == "new_asset");
 	 })
 
-	 it("should add the suggested asset", async () => {
+	 it("should approve the proposed asset", async () => {
 		 let contract = await SmartWeddingContract.deployed();
- 		 let assetIds = await contract.getAssetIds();
+ 		 let assetIds = await contract.getAssetIds({ from: husbandAddress });
  		 let latestAssetId = assetIds[assetIds.length - 1];
 		 let latestAssetIndex = latestAssetId - 1;
- 		 await contract.addAsset(latestAssetId, { from: wifeAddress });
+ 		 await contract.approveAsset(latestAssetId, { from: wifeAddress });
  		 let asset = await contract.assets(latestAssetIndex);
- 		 assert(asset[1] == true);
+ 		 assert(asset[3] == true);
  	 })
 
-	 it("should remove an asset", async () => {
+	 it("should remove the asset", async () => {
 		 let contract = await SmartWeddingContract.deployed();
- 		 let assetIds = await contract.getAssetIds();
+ 		 let assetIds = await contract.getAssetIds({ from: husbandAddress });
  		 let latestAssetId = assetIds[assetIds.length - 1];
 		 let latestAssetIndex = latestAssetId - 1;
  		 await contract.removeAsset(latestAssetId, { from: husbandAddress });
 		 await contract.removeAsset(latestAssetId, { from: wifeAddress });
  		 let asset = await contract.assets(latestAssetIndex);
- 		 assert(asset[2] == true);
+ 		 assert(asset[4] == true);
  	 })
 
 	 it("should divorce", async () => {
