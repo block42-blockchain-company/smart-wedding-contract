@@ -19,12 +19,11 @@ App = {
 		web3 = new Web3(App.web3Provider);
 		App.userAccount = web3.eth.accounts[0];
 
-		const accountInterval = setInterval(function() {
+		const walletUpdateInterval = setInterval(function() {
 			// Check if account has changed
 			if (web3.eth.accounts[0] !== App.userAccount) {
 				App.userAccount = web3.eth.accounts[0];
 				console.log("Active wallet: " + App.userAccount);
-				App.updateUi();
 			}
 		}, 100);
 
@@ -51,7 +50,18 @@ App = {
 			$("#proposeAssetModal-wife").val(100 - value);
 		});
 
-		return App.updateUi();
+		return App.initPolling();
+	},
+
+	initPolling: function() {
+		App.updateUi();
+
+		const frontendUpdateInterval = setInterval(function() {
+			// Check if function is already declared
+			if (App.updateUi !== undefined) {
+				App.updateUi();
+			}
+		}, 3000);
 	},
 
 	updateUi: function() {
@@ -153,23 +163,7 @@ App = {
 				});
 			});
 
-			return App.initPolling();
-		});
-	},
-
-	initPolling: function() {
-		App.updateEvents();
-
-		const eventInterval = setInterval(function() {
-			if (App.updateEvents !== undefined) {
-				App.updateEvents();
-			}
-		}, 3000);
-	},
-
-	updateEvents: function() {
-		// Update events
-		App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+			// Update events
 			contract.allEvents({ fromBlock: 0, toBlock: "latest" }).get(function (error, result) {
 				const events = result.reverse();
 
