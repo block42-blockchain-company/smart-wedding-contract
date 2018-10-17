@@ -129,6 +129,11 @@ App = {
 
 			// Update assets
 			contract.getAssetIds().then(function(assetIds) {
+				// Check if no update is required
+				if (assetIds.length == $("#assets").children().length) {
+					return;
+				}
+
 				$("#assets").empty();
 				$("#approveAssetModal-dropdown").empty();
 				$("#removeAssetModal-dropdown").empty();
@@ -244,7 +249,6 @@ function signContract() {
 	}).then(function(result) {
 		console.log(result);
 		$('#signContractModal').modal('hide');
-		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
 		$('#signContractModal').modal('hide');
@@ -267,7 +271,6 @@ function proposeAsset() {
 		$("#proposeAssetModal-range").val(50);
 		$("#proposeAssetModal-husband").val(50);
 		$("#proposeAssetModal-wife").val(50);
-		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
 		$('#proposeAssetModal').modal('hide');
@@ -289,7 +292,6 @@ function approveAsset() {
 		console.log(result);
 		$('#approveAssetModal').modal('hide');
 		$("#approveAssetModal-assetId").val("");
-		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
 		$('#approveAssetModal').modal('hide');
@@ -308,7 +310,6 @@ function removeAsset() {
 		console.log(result);
 		$('#removeAssetModal').modal('hide');
 		$("#removeAssetModal-assetId").val("");
-		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
 		$('#removeAssetModal').modal('hide');
@@ -335,7 +336,6 @@ function payIn() {
 
 			$('#payInModal').modal('hide');
 			$("#payInModal-amount").val("");
-			App.updateUi();
 		});
 	});
 }
@@ -352,7 +352,6 @@ function pay() {
 		$('#payModal').modal('hide');
 		$("#payModal-address").val("");
 		$("#payModal-amount").val("");
-		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
 		$('#payModal').modal('hide');
@@ -369,7 +368,6 @@ function divorce() {
 	}).then(function(result) {
 		console.log(result);
 		$('#divorceModal').modal('hide');
-		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
 		$('#divorceModal').modal('hide');
