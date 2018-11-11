@@ -292,6 +292,7 @@ function approveAsset() {
 		console.log(result);
 		$('#approveAssetModal').modal('hide');
 		$("#approveAssetModal-assetId").val("");
+		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
 		$('#approveAssetModal').modal('hide');
@@ -310,6 +311,7 @@ function removeAsset() {
 		console.log(result);
 		$('#removeAssetModal').modal('hide');
 		$("#removeAssetModal-assetId").val("");
+		App.updateUi();
 	}).catch(function(error) {
 		console.log(error);
 		$('#removeAssetModal').modal('hide');
