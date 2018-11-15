@@ -11,14 +11,13 @@ App = {
   },
 
   initWeb3: function() {
-		// Is there an injected web3 instance?
-		if (typeof web3 !== 'undefined') {
-  		App.web3Provider = web3.currentProvider;
-		} else {
-  		// If no injected web3 instance is detected, fall back to Ganache
-  		App.web3Provider = new Web3.providers.HttpProvider('https://127.0.0.1:8545');
+		// Check if MetaMask is available
+		if (typeof web3 === 'undefined') {
+			showErrorModal("Bitte installiere und aktiviere MetaMask!");
+			return
 		}
 
+		App.web3Provider = web3.currentProvider;
 		web3 = new Web3(App.web3Provider);
 		App.userAccount = web3.eth.accounts[0];
 
