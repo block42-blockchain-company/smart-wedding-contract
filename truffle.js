@@ -12,14 +12,29 @@
  *   },
  */
 
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const mnemonic = require("./secrets.js").mnemonic;
+const infuraApiKey = require("./secrets.js").infuraApiKey;
+
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
   networks: {
     development: {
-      host: "127.0.0.1",
-      port: 8545,
-      network_id: "*" // Match any network id
-    }
+			provider: function() {
+				return new HDWalletProvider(mnemonic, "http://127.0.0.1:8545")
+			},
+      network_id: "*",
+			gas: 5000000,
+			gasPrice: 10000000000
+    },
+		ropsten: {
+			provider: function() {
+				return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/" + infuraApiKey)
+			},
+      network_id: "3",
+			gas: 5000000,
+			gasPrice: 10000000000
+		}
   }
 };

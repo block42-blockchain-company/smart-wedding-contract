@@ -131,7 +131,7 @@ App = {
 						$(".action-button").attr("disabled", true);
 						$("#button-proposeWrittenContract").removeClass("btn-secondary").addClass("btn-success");
 						$("#button-proposeWrittenContract").attr("disabled", false);
-						
+
 						if (App.writtenContractIpfsHash.length !== 0) {
 							$("#button-signContract").removeClass("btn-secondary").addClass("btn-success");
 							$("#button-signContract").attr("disabled", false);
@@ -464,10 +464,10 @@ function addressToImageUrl(address) {
 	let imageUrl = "/images/unknown.jpg";
 
 	switch (address.toLowerCase()) {
-		case "0x5f29482aee907075dcd88dffaf96daa50229b02e":
+		case "0x7e5a6850e31ed2d0914de1d42e1eda95ccccedd5":
 		imageUrl = "/images/husband.jpg";
 		break;
-		case "0x482f1a41ca69bce106c484ec21ca726be860cf40":
+		case "0x616cc96629627fd5b901f00b1c72bf33db69bc62":
 		imageUrl = "/images/wife.jpg";
 		break;
 	}
@@ -483,10 +483,10 @@ function addressToName(address, useAddressIfUnknown) {
 	let name = useAddressIfUnknown ? address : "Unbekannt";
 
 	switch (address.toLowerCase()) {
-		case "0x5f29482aee907075dcd88dffaf96daa50229b02e":
+		case "0x7e5a6850e31ed2d0914de1d42e1eda95ccccedd5":
 		name = "Lukas";
 		break;
-		case "0x482f1a41ca69bce106c484ec21ca726be860cf40":
+		case "0x616cc96629627fd5b901f00b1c72bf33db69bc62":
 		name = "Julia";
 		break;
 	}

@@ -1,7 +1,7 @@
 const SmartWeddingContract = artifacts.require("SmartWeddingContract");
 
-const husbandAddress = "0x5F29482aEe907075DCD88dffAF96dAa50229b02e";
-const wifeAddress = "0x482f1A41ca69BcE106c484ec21CA726BE860Cf40";
+const husbandAddress = "0x7e5a6850e31Ed2d0914DE1D42E1eDA95ccCcedD5";
+const wifeAddress = "0x616Cc96629627Fd5B901F00B1C72Bf33db69bc62";
 
 contract('SmartWeddingContract', async (accounts) => {
 	it("should sign the contract by both spouses", async () => {
