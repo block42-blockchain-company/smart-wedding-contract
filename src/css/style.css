@@ -1,9 +1,5 @@
-.modal-body {
-    word-break: break-all;
-}
-
-div.row {
-  margin-bottom: 30px;
+body {
+  background: #333333;
 }
 
 h1 {
@@ -12,14 +8,18 @@ h1 {
   color: #FFFFFF;
 }
 
+div.row {
+  margin-bottom: 30px;
+}
+
+.modal-body {
+    word-break: break-all;
+}
+
 #wallet-image {
   width: 200px;
   height: auto;
   margin-bottom: 30px;
-}
-
-body {
-  background: #333333;
 }
 
 #actions button {

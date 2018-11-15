@@ -2,6 +2,8 @@ App = {
   web3Provider: undefined,
   contracts: {},
 	userAccount: undefined,
+	assets: [],
+	events: [],
 
   init: function() {
     return App.initWeb3();
@@ -65,6 +67,11 @@ App = {
 	},
 
 	updateUi: function() {
+		// Check if the encryption key has already been set
+		if (localStorage.getItem("encryptionKey") === null) {
+			$('#encryptionKeyModal').modal('show');
+		}
+
 		App.contracts.SmartWeddingContract.deployed().then(function(contract) {
 			// Update contract address and balance
 			web3.eth.getBalance(contract.address, function(error, balanceWei) {
@@ -127,24 +134,23 @@ App = {
 				});
 			});
 
-			// Update assets
-			contract.getAssetIds().then(function(assetIds) {
-				// Check if no update is required
-				if (assetIds.length == $("#assets").children().length) {
-					return;
-				}
+			// Check if assets should be updated
+			contract.getAssetIds().then(async function(assetIdsAsBigNumber) {
+				const assetIds = _.map(assetIdsAsBigNumber, function(assetIdAsBigNumber) { return web3.toBigNumber(assetIdAsBigNumber).toNumber() });
+				const newAssets = await Promise.all(_.map(assetIds, function(assetId) { return contract.assets(assetId - 1) }));
 
-				$("#assets").empty();
-				$("#approveAssetModal-dropdown").empty();
-				$("#removeAssetModal-dropdown").empty();
+				// Update assets
+				if (_.isEqual(newAssets, assets) === false) {
+					assets = newAssets;
 
-				_.each(assetIds, function(idAsBigNumber) {
-					let assetListItem = "<li class=\"list-group-item d-flex justify-content-between align-items-center\">__ASSET__ <span class=\"badge badge-__TYPE__\">__STATE__</span></li>";
+					$("#assets").empty();
+					$("#approveAssetModal-dropdown").empty();
+					$("#removeAssetModal-dropdown").empty();
 
-					const assetId = web3.toBigNumber(idAsBigNumber).toNumber();
+					_.each(assets, function (asset) {
+						let assetListItem = "<li class=\"list-group-item d-flex justify-content-between align-items-center\">__ASSET__ <span class=\"badge badge-__TYPE__\">__STATE__</span></li>";
 
-					contract.assets(assetId - 1).then(function (asset) {
-						const text = asset[0];
+						const text = decrypt(asset[0]);
 						const husbandAllocation = asset[1];
 						const wifeAllocation = asset[2];
 						const added = asset[3];
@@ -160,71 +166,77 @@ App = {
 							assetListItem = updateAssetListItem(assetListItem, formattedText, "warning", "Genehmigung ausstehend");
 						}
 
+						const assetId = _.indexOf(assets, asset) + 1;
+
 						$("#assets").append(assetListItem);
 						$("#approveAssetModal-dropdown").append(new Option(text, assetId));
 						// Only append already assests which have not been removed yet
 						if (added && !removed) $("#removeAssetModal-dropdown").append(new Option(text, assetId));
 					});
-				});
+				}
 			});
 
-			// Update events
+			// Check if events should be updated
 			contract.allEvents({ fromBlock: 0, toBlock: "latest" }).get(function (error, result) {
-				const events = result.reverse();
+				const newEvents = [];
 
-				// Check if no update is required
-				if (events.length == $("#events").children().length) {
-					return;
-				}
-
-				$("#events").empty();
-
-				_.each(events, function (eventObject) {
-					let eventListItem = "<div class=\"alert alert-__TYPE__\" role=\"alert\">__TEXT__</div>";
-
-					const asset = eventObject.args["asset"];
-					const address = eventObject.args["wallet"];
-					const amount = eventObject.args["amount"];
-					const value = web3.fromWei(web3.toBigNumber(amount).toNumber());
-
-					switch (eventObject.event) {
-						case "Signed":
-						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat den Vertrag unterzeichnet!");
-						break;
-						case "ContractSigned":
-						eventListItem = updateEventListItem(eventListItem, "success", "Beide Ehepartner haben den Vertrag unterzeichnet!");
-						break;
-						case "AssetProposed":
-						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat ein neues Asset vorgeschlagen: " + asset);
-						break;
-						case "AssetAddApproved":
-						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat das Asset genehmigt: " + asset);
-						break;
-						case "AssetAdded":
-						eventListItem = updateEventListItem(eventListItem, "success", "Asset wurde hinzugefügt: " + asset);
-						break;
-						case "AssetRemoveApproved":
-						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat dem Entfernen des Assets zugestimmt: " + asset);
-						break;
-						case "AssetRemoved":
-						eventListItem = updateEventListItem(eventListItem, "danger", "Asset wurde entfernt: " + asset);
-						break;
-						case "DivorceApproved":
-						eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat die Scheidung eingereicht!");
-						break;
-						case "Divorced":
-						eventListItem = updateEventListItem(eventListItem, "danger", "Beide Ehepartner haben der Scheidung zugestimmt!");
-						break;
-						case "Sent":
-						eventListItem = updateEventListItem(eventListItem, "danger", value + " ETH wurden an " + addressToName(address, true) + " gesendet!");
-						break;
-						case "Received":
-						eventListItem = updateEventListItem(eventListItem, "success", value + " ETH wurden von " + addressToName(address, true) + " empfangen!");
-						break;
-					}
-
-					$("#events").append(eventListItem);
+				_.each(result.reverse(), function (eventObject) {
+					newEvents.push({ args: eventObject.args, event: eventObject.event });
 				});
+
+				// Update events
+				if (_.isEqual(newEvents, events) === false) {
+					events = newEvents;
+
+					$("#events").empty();
+
+					_.each(events, function (event) {
+						let eventListItem = "<div class=\"alert alert-__TYPE__\" role=\"alert\">__TEXT__</div>";
+
+						const asset = decrypt(event.args["asset"]);
+						const address = event.args["wallet"];
+						const amount = event.args["amount"];
+						const value = web3.fromWei(web3.toBigNumber(amount).toNumber());
+
+						switch (event.event) {
+							case "Signed":
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat den Vertrag unterzeichnet!");
+							break;
+							case "ContractSigned":
+							eventListItem = updateEventListItem(eventListItem, "success", "Beide Ehepartner haben den Vertrag unterzeichnet!");
+							break;
+							case "AssetProposed":
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat ein neues Asset vorgeschlagen: " + asset);
+							break;
+							case "AssetAddApproved":
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat das Asset genehmigt: " + asset);
+							break;
+							case "AssetAdded":
+							eventListItem = updateEventListItem(eventListItem, "success", "Asset wurde hinzugefügt: " + asset);
+							break;
+							case "AssetRemoveApproved":
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat dem Entfernen des Assets zugestimmt: " + asset);
+							break;
+							case "AssetRemoved":
+							eventListItem = updateEventListItem(eventListItem, "danger", "Asset wurde entfernt: " + asset);
+							break;
+							case "DivorceApproved":
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat die Scheidung eingereicht!");
+							break;
+							case "Divorced":
+							eventListItem = updateEventListItem(eventListItem, "danger", "Beide Ehepartner haben der Scheidung zugestimmt!");
+							break;
+							case "Sent":
+							eventListItem = updateEventListItem(eventListItem, "danger", value + " ETH wurden an " + addressToName(address, true) + " gesendet!");
+							break;
+							case "Received":
+							eventListItem = updateEventListItem(eventListItem, "success", value + " ETH wurden von " + addressToName(address, true) + " empfangen!");
+							break;
+						}
+
+						$("#events").append(eventListItem);
+					});
+				}
 			});
 		});
 	}
@@ -236,6 +248,10 @@ App = {
 
 $(document).ready(function() {
   App.init();
+});
+
+$(window).on("unload", function(e) {
+	//localStorage.removeItem("encryptionKey");
 });
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -261,9 +277,11 @@ function proposeAsset() {
 	const husbandAllocation = $("#proposeAssetModal-husband").val();
 	const wifeAllocation = $("#proposeAssetModal-wife").val();
 
+	const encryptedAsset = encrypt(asset);
+
 	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
-		console.log("Action: Propose Asset -> " + asset);
-		return contract.proposeAsset(asset, husbandAllocation, wifeAllocation, { from: App.userAccount });
+		console.log("Action: Propose Asset -> " + asset + " (encrypted: " + encryptedAsset + ")");
+		return contract.proposeAsset(encryptedAsset, husbandAllocation, wifeAllocation, { from: App.userAccount });
 	}).then(function(result) {
 		console.log(result);
 		$('#proposeAssetModal').modal('hide');
@@ -382,6 +400,13 @@ function showErrorModal(message) {
 	$('#errorModal').modal('show');
 }
 
+function setEncryptionKey() {
+	const encryptionKey = $("#encryptionKeyModal-key").val();
+	localStorage.setItem("encryptionKey", encryptionKey);
+	$('#encryptionKeyModal').modal('hide');
+	$("#encryptionKeyModal-key").val("");
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------------------------------------------------
@@ -430,4 +455,31 @@ function addressToName(address, useAddressIfUnknown) {
 	}
 
 	return name;
+}
+
+function encrypt(data) {
+	if (_.isUndefined(data)) return "";
+
+	// Get the encryption key from the local storage
+	const encryptionKey = localStorage.getItem("encryptionKey");
+	// Encrypt data
+	return CryptoJS.AES.encrypt(data, encryptionKey).toString();
+}
+
+function decrypt(data) {
+	if (_.isUndefined(data)) return "";
+
+	// Get the encryption key from the local storage
+	const encryptionKey = localStorage.getItem("encryptionKey");
+
+	let decrypted;
+	try {
+		// Try to decrypt the data
+		decrypted = CryptoJS.AES.decrypt(data, encryptionKey).toString(CryptoJS.enc.Utf8);
+	} catch (error) {
+		decrypted = "";
+	}
+
+	// Fallback to '???' if encryption key is wrong
+	return decrypted.length === 0 ? "???" : decrypted;
 }
