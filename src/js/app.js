@@ -16,7 +16,7 @@ App = {
   		App.web3Provider = web3.currentProvider;
 		} else {
   		// If no injected web3 instance is detected, fall back to Ganache
-  		App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
+  		App.web3Provider = new Web3.providers.HttpProvider('https://ropsten.infura.io:7545');
 		}
 
 		web3 = new Web3(App.web3Provider);
@@ -34,7 +34,7 @@ App = {
   },
 
   initContract: function() {
-		$.getJSON('SmartWeddingContract.json', function(data) {
+		$.getJSON('./SmartWeddingContract.json', function(data) {
 			const SmartWeddingContract = data;
 
   		// Get the necessary contract artifact file and instantiate it with truffle-contract
@@ -103,7 +103,7 @@ App = {
 
 			// Update written contract ipfs link
 			contract.writtenContractIpfsHash().then(function(writtenContractIpfsHash) {
-				$("#written-contract-link").attr("href", "http://localhost:8080/ipfs/" + writtenContractIpfsHash);
+				$("#written-contract-link").attr("href", "https://ipfs.infura.io/ipfs/" + writtenContractIpfsHash);
 				App.writtenContractIpfsHash = writtenContractIpfsHash;
 
 				if (App.writtenContractIpfsHash.length !== 0) {
@@ -461,14 +461,14 @@ function addressToImageUrl(address) {
 		return "";
 	}
 
-	let imageUrl = "/images/unknown.jpg";
+	let imageUrl = "./images/unknown.jpg";
 
 	switch (address.toLowerCase()) {
 		case "0x7e5a6850e31ed2d0914de1d42e1eda95ccccedd5":
-		imageUrl = "/images/husband.jpg";
+		imageUrl = "./images/husband.jpg";
 		break;
 		case "0x616cc96629627fd5b901f00b1c72bf33db69bc62":
-		imageUrl = "/images/wife.jpg";
+		imageUrl = "./images/wife.jpg";
 		break;
 	}
 
