@@ -49,7 +49,7 @@
                 </div>
                 <input id="contract-wifeAddress" type="text" class="form-control" placeholder="???" aria-label="Wife Address" aria-describedby="basic-addon2" readonly>
               </div>
-              <p class="card-text">📁 <a id="contract-link" href="" target="_blank">Smart-Wedding-Contract.pdf</a></p>
+              <p class="card-text">📁 <a id="written-contract-link" class="disabled" href="" target="_blank">Schriftlicher Vertrag</a></p>
               <h5 class="card-title">Status</h5>
               <div class="form-check">
                 <input id="contract-signed" class="form-check-input" type="checkbox" value="" disabled>
@@ -83,14 +83,15 @@
 
       <div class="row">
         <div id="actions" class="col-sm text-center">
-          <button id="button-signContract" type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#signContractModal">Unterzeichnen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#proposeAssetModal">Asset hinzufügen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#approveAssetModal">Asset bestätigen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#removeAssetModal">Asset entfernen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#payInModal">Einzahlen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#payModal">Bezahlen</button>
-          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#encryptionKeyModal">Zugriffschlüssel setzen</button>
-          <button id="button-divorce" type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#divorceModal">Scheidung einreichen</button>
+          <button id="button-proposeWrittenContract" type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#proposeWrittenContractModal" disabled>Schriflichen Vertrag vorschlagen</button>
+          <button id="button-signContract" type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#signContractModal" disabled>Unterzeichnen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#proposeAssetModal" disabled>Asset hinzufügen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#approveAssetModal" disabled>Asset bestätigen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#removeAssetModal" disabled>Asset entfernen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#payInModal" disabled>Einzahlen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#payModal" disabled>Bezahlen</button>
+          <button type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#encryptionKeyModal" disabled>Zugriffschlüssel setzen</button>
+          <button id="button-divorce" type="button" class="action-button btn btn-secondary" data-toggle="modal" data-target="#divorceModal" disabled>Scheidung einreichen</button>
         </div>
       </div>
 
@@ -120,6 +121,31 @@
     </div>
 
     <!-- Modals -->
+
+    <div class="modal fade" id="proposeWrittenContractModal" tabindex="-1" role="dialog" aria-labelledby="proposeWrittenContractModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="proposeWrittenContractModalLabel">Schriftlichen Vertrag vorschlagen</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <input id="proposeWrittenContractModal-hash" type="text" class="form-control" placeholder="Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u" aria-label="IPFS Hash" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">IPFS Hash</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+            <button type="button" class="btn btn-primary" onclick="proposeWrittenContract()">Vorschlagen</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="modal fade" id="signContractModal" tabindex="-1" role="dialog" aria-labelledby="signContractModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">

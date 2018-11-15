@@ -11,6 +11,7 @@ import "./zeppelin/math/SafeMath.sol";
 contract SmartWeddingContract {
 	using SafeMath for uint256;
 
+	event WrittenContractProposed(string ipfsHash, address wallet);
 	event Signed(address wallet);
 	event ContractSigned();
 	event AssetProposed(string asset, address wallet);
@@ -31,7 +32,7 @@ contract SmartWeddingContract {
 
 	address public husbandAddress;
 	address public wifeAddress;
-	string public writtenContractId;
+	string public writtenContractIpfsHash;
 
 	struct Asset {
 		string data;
@@ -77,18 +78,17 @@ contract SmartWeddingContract {
 	}
 
 	/**
-	 * @dev Constructor sets the addresses of both spouses and the id of the written wedding contract.
-	 * @param _writtenContractId IPFS hash of the written wedding contract.
+	 * @dev Constructor sets the addresses of both spouses.
+	 * @param _husbandAddress Wallet address of the husband.
+	 * @param _wifeAddress Wallet address of the wife.
 	 */
-	constructor(address _husbandAddress, address _wifeAddress, string _writtenContractId) public {
+	constructor(address _husbandAddress, address _wifeAddress) public {
 		require(_husbandAddress != address(0), "Husbands address must not be address zero");
 		require(_wifeAddress != address(0), "Wife address must not be address zero");
 		require(_husbandAddress != _wifeAddress, "Husband address must not equal wife address");
-		require(isSameString(_writtenContractId, ""), "Written contract id must not be empty");
 
 		husbandAddress = _husbandAddress;
 		wifeAddress = _wifeAddress;
-		writtenContractId = _writtenContractId;
 	}
 
 	/**
@@ -99,9 +99,37 @@ contract SmartWeddingContract {
 	}
 
 	/**
+	 * @dev Propose a written contract.
+	 * @param _writtenContractIpfsHash IPFS hash of the written contract.
+	 */
+	function proposeWrittenContract(string _writtenContractIpfsHash) external onlySpouse {
+		require(signed == false, "Contract can not be changed any more, both spouses have already signed it");
+
+		// Update written contract ipfs hash
+		writtenContractIpfsHash = _writtenContractIpfsHash;
+
+		emit WrittenContractProposed(_writtenContractIpfsHash, msg.sender);
+
+		// Revoke signature of opposite spouse
+		if (msg.sender == husbandAddress) {
+			hasSigned[wifeAddress] = false;
+		}
+		if (msg.sender == wifeAddress) {
+			hasSigned[husbandAddress] = false;
+		}
+
+		// Auto-sign
+		if (hasSigned[msg.sender] == false) {
+			hasSigned[msg.sender] = true;
+			emit Signed(msg.sender);
+		}
+	}
+
+	/**
 	 * @dev Sign the contract.
 	 */
 	function signContract() external onlySpouse {
+		require(isSameString(writtenContractIpfsHash, ""), "No written contract has been proposed yet");
 		require(hasSigned[msg.sender] == false, "Spouse has already signed the contract");
 
 		hasSigned[msg.sender] = true;
@@ -114,7 +142,7 @@ contract SmartWeddingContract {
 		}
 	}
 
-	function pay(address _to, uint _amount) onlySpouse isSigned isNotDivorced {
+	function pay(address _to, uint _amount) external onlySpouse isSigned isNotDivorced {
 		require(_to != address(0), "Sending funds to address zero is forbidden");
 		require(_amount <= address(this).balance, "Not enough funds available");
 

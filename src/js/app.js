@@ -2,6 +2,7 @@ App = {
   web3Provider: undefined,
   contracts: {},
 	userAccount: undefined,
+	writtenContractIpfsHash: "",
 	assets: [],
 	events: [],
 
@@ -100,9 +101,16 @@ App = {
 				$("#contract-wifeAddress").val(wifeAddress);
 			});
 
-			// Update written contract IPFS link
-			contract.writtenContractId().then(function(writtenContractId) {
-				$("#contract-link").attr("href", "http://localhost:8080/ipfs/" + writtenContractId);
+			// Update written contract ipfs link
+			contract.writtenContractIpfsHash().then(function(writtenContractIpfsHash) {
+				$("#written-contract-link").attr("href", "http://localhost:8080/ipfs/" + writtenContractIpfsHash);
+				App.writtenContractIpfsHash = writtenContractIpfsHash;
+
+				if (App.writtenContractIpfsHash.length !== 0) {
+					$("#written-contract-link").removeClass("disabled");
+				} else {
+					$("#written-contract-link").addClass("disabled");
+				}
 			});
 
 			// Update contract signed state
@@ -121,11 +129,18 @@ App = {
 					} else if (!signed) {
 						$(".action-button").removeClass("btn-primary").addClass("btn-secondary");
 						$(".action-button").attr("disabled", true);
-						$("#button-signContract").removeClass("btn-secondary").addClass("btn-success");
-						$("#button-signContract").attr("disabled", false);
+						$("#button-proposeWrittenContract").removeClass("btn-secondary").addClass("btn-success");
+						$("#button-proposeWrittenContract").attr("disabled", false);
+						
+						if (App.writtenContractIpfsHash.length !== 0) {
+							$("#button-signContract").removeClass("btn-secondary").addClass("btn-success");
+							$("#button-signContract").attr("disabled", false);
+						}
 					} else {
 						$(".action-button").removeClass("btn-secondary").addClass("btn-primary");
 						$(".action-button").attr("disabled", false);
+						$("#button-proposeWrittenContract").removeClass("btn-success").addClass("btn-secondary");
+						$("#button-proposeWrittenContract").attr("disabled", true);
 						$("#button-signContract").removeClass("btn-success").addClass("btn-secondary");
 						$("#button-signContract").attr("disabled", true);
 						$("#button-divorce").removeClass("btn-secondary").addClass("btn-danger");
@@ -141,13 +156,13 @@ App = {
 
 				// Update assets
 				if (_.isEqual(newAssets, assets) === false) {
-					assets = newAssets;
+					App.assets = newAssets;
 
 					$("#assets").empty();
 					$("#approveAssetModal-dropdown").empty();
 					$("#removeAssetModal-dropdown").empty();
 
-					_.each(assets, function (asset) {
+					_.each(App.assets, function (asset) {
 						let assetListItem = "<li class=\"list-group-item d-flex justify-content-between align-items-center\">__ASSET__ <span class=\"badge badge-__TYPE__\">__STATE__</span></li>";
 
 						const text = decrypt(asset[0]);
@@ -166,7 +181,7 @@ App = {
 							assetListItem = updateAssetListItem(assetListItem, formattedText, "warning", "Genehmigung ausstehend");
 						}
 
-						const assetId = _.indexOf(assets, asset) + 1;
+						const assetId = _.indexOf(App.assets, asset) + 1;
 
 						$("#assets").append(assetListItem);
 						$("#approveAssetModal-dropdown").append(new Option(text, assetId));
@@ -186,19 +201,23 @@ App = {
 
 				// Update events
 				if (_.isEqual(newEvents, events) === false) {
-					events = newEvents;
+					App.events = newEvents;
 
 					$("#events").empty();
 
-					_.each(events, function (event) {
+					_.each(App.events, function (event) {
 						let eventListItem = "<div class=\"alert alert-__TYPE__\" role=\"alert\">__TEXT__</div>";
 
 						const asset = decrypt(event.args["asset"]);
 						const address = event.args["wallet"];
 						const amount = event.args["amount"];
 						const value = web3.fromWei(web3.toBigNumber(amount).toNumber());
+						const ipfsHash = event.args["ipfsHash"];
 
 						switch (event.event) {
+							case "WrittenContractProposed":
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat einen schriftlichen Vertrag vorgeschlagen: " + ipfsHash);
+							break;
 							case "Signed":
 							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat den Vertrag unterzeichnet!");
 							break;
@@ -257,6 +276,24 @@ $(window).on("unload", function(e) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Smart contract functions
 // ---------------------------------------------------------------------------------------------------------------------
+
+function proposeWrittenContract() {
+	const writtenContractIpfsHash = $("#proposeWrittenContractModal-hash").val();
+
+	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+		console.log("Action: Propose Written Contract -> " + writtenContractIpfsHash);
+		return contract.proposeWrittenContract(writtenContractIpfsHash, { from: App.userAccount });
+	}).then(function(result) {
+		console.log(result);
+		$('#proposeWrittenContractModal').modal('hide');
+		$("#proposeWrittenContractModal-hash").val("");
+	}).catch(function(error) {
+		console.log(error);
+		$('#proposeWrittenContractModal').modal('hide');
+		$("#proposeWrittenContractModal-hash").val("");
+		showErrorModal("Das Setzen des schriftlichen Vertrags ist fehlgeschlagen!");
+	});
+}
 
 function signContract() {
 	App.contracts.SmartWeddingContract.deployed().then(function(contract) {

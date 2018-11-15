@@ -12,6 +12,11 @@ div.row {
   margin-bottom: 30px;
 }
 
+a.disabled {
+  color: #6c757d;
+  pointer-events: none;
+}
+
 .modal-body {
     word-break: break-all;
 }
