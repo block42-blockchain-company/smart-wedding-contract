@@ -1,6 +1,4 @@
-pragma solidity ^0.4.24;
-
-import "./zeppelin/math/SafeMath.sol";
+pragma solidity 0.4.24;
 
 
 /**
@@ -9,8 +7,6 @@ import "./zeppelin/math/SafeMath.sol";
  * dissolution. A multisig variant is used to consider the decision of both parties.
  */
 contract SmartWeddingContract {
-	using SafeMath for uint256;
-
 	event WrittenContractProposed(string ipfsHash, address wallet);
 	event Signed(address wallet);
 	event ContractSigned();
@@ -147,7 +143,7 @@ contract SmartWeddingContract {
 		require(_amount <= address(this).balance, "Not enough funds available");
 
 		// Send funds
-		require(_to.send(_amount));
+		_to.transfer(_amount);
 
 		emit Sent(_to, _amount);
 	}
@@ -238,10 +234,10 @@ contract SmartWeddingContract {
 
 			if (balance != 0) {
 				// Split the remaining balance of the contract 50:50
-				uint balancePerSpouse = balance.div(2);
-				require(husbandAddress.send(balancePerSpouse));
+				uint balancePerSpouse = balance / 2;
+				husbandAddress.transfer(balancePerSpouse);
 				emit Sent(husbandAddress, balancePerSpouse);
-				require(wifeAddress.send(balancePerSpouse));
+				wifeAddress.transfer(balancePerSpouse);
 				emit Sent(wifeAddress, balancePerSpouse);
 			}
 		}
@@ -251,9 +247,10 @@ contract SmartWeddingContract {
 	 * @dev Return a list of all asset ids.
 	 */
 	function getAssetIds() external view onlySpouse returns (uint[]) {
-		uint[] memory assetIds = new uint[](assets.length);
+		uint assetCount = assets.length;
+		uint[] memory assetIds = new uint[](assetCount);
 
-		for (uint i = 1; i <= assets.length; i++) {
+		for (uint i = 1; i <= assetCount; i++) {
 			assetIds[i - 1] = i;
 		}
 
