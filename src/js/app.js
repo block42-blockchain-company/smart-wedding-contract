@@ -463,10 +463,10 @@ function addressToImageUrl(address) {
 	let imageUrl = "./images/unknown.jpg";
 
 	switch (address.toLowerCase()) {
-		case "0x48fF344581827d855A27Dd4FF0742dfC88b0DE7A":
+		case "0x48ff344581827d855a27dd4ff0742dfc88b0de7a":
 		imageUrl = "./images/husband.jpg";
 		break;
-		case "0x2CcE6E686960945F8Eb6a392F7682E0D7E814d60":
+		case "0x2cce6e686960945f8eb6a392f7682e0d7e814d60":
 		imageUrl = "./images/wife.jpg";
 		break;
 	}
@@ -482,10 +482,10 @@ function addressToName(address, useAddressIfUnknown) {
 	let name = useAddressIfUnknown ? address : "Unbekannt";
 
 	switch (address.toLowerCase()) {
-		case "0x48fF344581827d855A27Dd4FF0742dfC88b0DE7A":
+		case "0x48ff344581827d855a27dd4ff0742dfc88b0de7a":
 		name = "Lukas";
 		break;
-		case "0x2CcE6E686960945F8Eb6a392F7682E0D7E814d60":
+		case "0x2cce6e686960945f8eb6a392f7682e0d7e814d60":
 		name = "Julia";
 		break;
 	}
