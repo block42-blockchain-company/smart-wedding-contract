@@ -123,27 +123,19 @@ App = {
 
 					// Update action button states
 					if (divorced) {
-						$(".action-button").removeClass("btn-primary").addClass("btn-secondary");
-						$(".action-button").attr("disabled", true);
+						$(".action-button").removeClass("btn-primary").removeClass("btn-danger").removeClass("btn-success").addClass("btn-secondary").attr("disabled", true);
 					} else if (!signed) {
-						$(".action-button").removeClass("btn-primary").addClass("btn-secondary");
-						$(".action-button").attr("disabled", true);
-						$("#button-proposeWrittenContract").removeClass("btn-secondary").addClass("btn-success");
-						$("#button-proposeWrittenContract").attr("disabled", false);
+						$(".action-button").removeClass("btn-primary").addClass("btn-secondary").attr("disabled", true);
+						$("#button-proposeWrittenContract").removeClass("btn-secondary").addClass("btn-success").attr("disabled", false);
 
 						if (App.writtenContractIpfsHash.length !== 0) {
-							$("#button-signContract").removeClass("btn-secondary").addClass("btn-success");
-							$("#button-signContract").attr("disabled", false);
+							$("#button-signContract").removeClass("btn-secondary").addClass("btn-success").attr("disabled", false);
 						}
 					} else {
-						$(".action-button").removeClass("btn-secondary").addClass("btn-primary");
-						$(".action-button").attr("disabled", false);
-						$("#button-proposeWrittenContract").removeClass("btn-success").addClass("btn-secondary");
-						$("#button-proposeWrittenContract").attr("disabled", true);
-						$("#button-signContract").removeClass("btn-success").addClass("btn-secondary");
-						$("#button-signContract").attr("disabled", true);
-						$("#button-divorce").removeClass("btn-secondary").addClass("btn-danger");
-						$("#button-divorce").attr("disabled", false);
+						$(".action-button").removeClass("btn-secondary").addClass("btn-primary").attr("disabled", false);
+						$("#button-proposeWrittenContract").removeClass("btn-success").addClass("btn-secondary").attr("disabled", true);
+						$("#button-signContract").removeClass("btn-success").addClass("btn-secondary").attr("disabled", true);
+						$("#button-divorce").removeClass("btn-secondary").addClass("btn-danger").attr("disabled", false);
 					}
 				});
 			});

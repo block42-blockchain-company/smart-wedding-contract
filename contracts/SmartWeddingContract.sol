@@ -23,8 +23,8 @@ contract SmartWeddingContract {
 	bool public signed = false;
 	bool public divorced = false;
 
-	mapping (address => bool) hasSigned;
-	mapping (address => bool) hasDivorced;
+	mapping (address => bool) private hasSigned;
+	mapping (address => bool) private hasDivorced;
 
 	address public husbandAddress;
 	address public wifeAddress;
@@ -46,7 +46,7 @@ contract SmartWeddingContract {
 	 * @dev Modifier that only allows spouse execution.
  	 */
 	modifier onlySpouse() {
-		require(msg.sender == husbandAddress || msg.sender == wifeAddress, "Sender is not a spouse");
+		require(msg.sender == husbandAddress || msg.sender == wifeAddress, "Sender is not a spouse!");
 		_;
 	}
 
@@ -54,7 +54,7 @@ contract SmartWeddingContract {
 	 * @dev Modifier that checks if the contract has been signed by both spouses.
  	 */
 	modifier isSigned() {
-		require(signed == true, "Contract is not signed by both spouses yet");
+		require(signed == true, "Contract has not been signed by both spouses yet!");
 		_;
 	}
 
@@ -62,14 +62,14 @@ contract SmartWeddingContract {
 	 * @dev Modifier that only allows execution if the spouses have not been divorced.
  	 */
 	modifier isNotDivorced() {
-		require(divorced == false, "Can not be called after dissolution");
+		require(divorced == false, "Can not be called after spouses agreed to divorce!");
 		_;
 	}
 
 	/**
 	 * @dev Internal helper function to check if a string is the same as another.
 	 */
-	function isSameString(string string1, string string2) internal pure returns (bool) {
+	function isSameString(string memory string1, string memory string2) private pure returns (bool) {
 		return keccak256(abi.encodePacked(string1)) != keccak256(abi.encodePacked(string2));
 	}
 
@@ -79,9 +79,9 @@ contract SmartWeddingContract {
 	 * @param _wifeAddress Wallet address of the wife.
 	 */
 	constructor(address _husbandAddress, address _wifeAddress) public {
-		require(_husbandAddress != address(0), "Husbands address must not be address zero");
-		require(_wifeAddress != address(0), "Wife address must not be address zero");
-		require(_husbandAddress != _wifeAddress, "Husband address must not equal wife address");
+		require(_husbandAddress != address(0), "Husband address must not be zero!");
+		require(_wifeAddress != address(0), "Wife address must not be zero!");
+		require(_husbandAddress != _wifeAddress, "Husband address must not equal wife address!");
 
 		husbandAddress = _husbandAddress;
 		wifeAddress = _wifeAddress;
@@ -90,7 +90,7 @@ contract SmartWeddingContract {
 	/**
 	 * @dev Default function to enable sending funds to the contract.
  	 */
-	function () public payable isSigned isNotDivorced {
+	function() external payable isSigned isNotDivorced {
 		emit Received(msg.sender, msg.value);
 	}
 
@@ -99,25 +99,19 @@ contract SmartWeddingContract {
 	 * @param _writtenContractIpfsHash IPFS hash of the written contract.
 	 */
 	function proposeWrittenContract(string _writtenContractIpfsHash) external onlySpouse {
-		require(signed == false, "Contract can not be changed any more, both spouses have already signed it");
+		require(signed == false, "Written contract ipfs hash can not be changed. Both spouses have already signed it!");
 
 		// Update written contract ipfs hash
 		writtenContractIpfsHash = _writtenContractIpfsHash;
 
 		emit WrittenContractProposed(_writtenContractIpfsHash, msg.sender);
 
-		// Revoke signature of opposite spouse
-		if (msg.sender == husbandAddress) {
-			hasSigned[wifeAddress] = false;
-		}
-		if (msg.sender == wifeAddress) {
+		// Revoke previous signatures
+		if (hasSigned[husbandAddress] == true) {
 			hasSigned[husbandAddress] = false;
 		}
-
-		// Auto-sign
-		if (hasSigned[msg.sender] == false) {
-			hasSigned[msg.sender] = true;
-			emit Signed(msg.sender);
+		if (hasSigned[wifeAddress] == true) {
+			hasSigned[wifeAddress] = false;
 		}
 	}
 
@@ -125,13 +119,15 @@ contract SmartWeddingContract {
 	 * @dev Sign the contract.
 	 */
 	function signContract() external onlySpouse {
-		require(isSameString(writtenContractIpfsHash, ""), "No written contract has been proposed yet");
-		require(hasSigned[msg.sender] == false, "Spouse has already signed the contract");
+		require(isSameString(writtenContractIpfsHash, ""), "Written contract ipfs hash has been proposed yet!");
+		require(hasSigned[msg.sender] == false, "Spouse has already signed the contract!");
 
+		// Sender signed
 		hasSigned[msg.sender] = true;
 
 		emit Signed(msg.sender);
 
+		// Check if both spouses have signed
 		if (hasSigned[husbandAddress] && hasSigned[wifeAddress]) {
 			signed = true;
 			emit ContractSigned();
@@ -139,10 +135,10 @@ contract SmartWeddingContract {
 	}
 
 	function pay(address _to, uint _amount) external onlySpouse isSigned isNotDivorced {
-		require(_to != address(0), "Sending funds to address zero is forbidden");
-		require(_amount <= address(this).balance, "Not enough funds available");
+		require(_to != address(0), "Burning funds is prohibited!");
+		require(_amount <= address(this).balance, "Not enough balance available!");
 
-		// Send funds
+		// Send funds to the destination address
 		_to.transfer(_amount);
 
 		emit Sent(_to, _amount);
@@ -155,14 +151,25 @@ contract SmartWeddingContract {
 	 * @param _wifeAllocation Allocation of the wife.
 	 */
 	function proposeAsset(string _data, uint _husbandAllocation, uint _wifeAllocation) external onlySpouse isSigned isNotDivorced {
-		require(isSameString(_data, ""), "An asset must be provided");
-		require(_husbandAllocation >= 0, "Invalid husband allocation");
-		require(_wifeAllocation >= 0, "Invalid wife allocation");
-		require((_husbandAllocation + _wifeAllocation) == 100, "Invalid allocations");
+		require(isSameString(_data, ""), "No asset data provided!");
+		require(_husbandAllocation >= 0, "Husband allocation invalid!");
+		require(_wifeAllocation >= 0, "Wife allocation invalid!");
+		require((_husbandAllocation + _wifeAllocation) == 100, "Allocation sum does not equal 100%!");
 
-		// Add a new asset and instantly approve it by the sender
-		uint id = assets.push(Asset(_data, _husbandAllocation, _wifeAllocation, false, false));
-		Asset storage asset = assets[id - 1];
+		// Add new asset
+		Asset memory newAsset = Asset({
+			data: _data,
+			husbandAllocation: _husbandAllocation,
+			wifeAllocation: _wifeAllocation,
+			added: false,
+			removed: false
+		});
+		uint newAssetId = assets.push(newAsset);
+
+		// Map to a storage object (otherwise mappings could not be accessed)
+		Asset storage asset = assets[newAssetId - 1];
+
+		// Instantly approve it by the sender
 		asset.hasApprovedAdd[msg.sender] = true;
 
 		emit AssetProposed(_data, msg.sender);
@@ -172,19 +179,20 @@ contract SmartWeddingContract {
 	 * @dev Approve the addition of a prior proposed asset. The other spouse needs to approve this action.
 	 */
 	function approveAsset(uint _assetId) external onlySpouse isSigned isNotDivorced {
-		require(_assetId > 0 && _assetId <= assets.length, "Invalid asset id");
+		require(_assetId > 0 && _assetId <= assets.length, "Invalid asset id!");
 
 		Asset storage asset = assets[_assetId - 1];
-		require(asset.added == false, "Asset has already been added");
-		require(asset.removed == false, "Asset has already been removed");
-		require(asset.hasApprovedAdd[msg.sender] == false, "Already approved by spouse");
 
-		// Approve addition by the sender
+		require(asset.added == false, "Asset has already been added!");
+		require(asset.removed == false, "Asset has already been removed!");
+		require(asset.hasApprovedAdd[msg.sender] == false, "Asset has already approved by sender!");
+
+		// Sender approved
 		asset.hasApprovedAdd[msg.sender] = true;
 
 		emit AssetAddApproved(asset.data, msg.sender);
 
-		// Check if both spouses have approved the asset
+		// Check if both spouses have approved
 		if (asset.hasApprovedAdd[husbandAddress] && asset.hasApprovedAdd[wifeAddress]) {
 			asset.added = true;
 			emit AssetAdded(asset.data);
@@ -195,12 +203,12 @@ contract SmartWeddingContract {
 	 * @dev Approve the removal of a prior proposed/already added asset. The other spouse needs to approve this action.
 	 */
 	function removeAsset(uint _assetId) external onlySpouse isSigned isNotDivorced {
-		require(_assetId > 0 && _assetId <= assets.length, "Invalid asset id");
+		require(_assetId > 0 && _assetId <= assets.length, "Invalid asset id!");
 
 		Asset storage asset = assets[_assetId - 1];
-		require(asset.added, "Asset has not been added yet");
-		require(asset.removed == false, "Asset has already been removed");
-		require(asset.hasApprovedRemove[msg.sender] == false, "Removing this asset has already been approved by the spouse");
+		require(asset.added, "Asset has not been added yet!");
+		require(asset.removed == false, "Asset has already been removed!");
+		require(asset.hasApprovedRemove[msg.sender] == false, "Removing the asset has already been approved by the sender!");
 
 		// Approve removal by the sender
 		asset.hasApprovedRemove[msg.sender] = true;
@@ -218,28 +226,30 @@ contract SmartWeddingContract {
 	 * @dev Request to divorce. The other spouse needs to approve this action.
 	 */
 	function divorce() external onlySpouse isSigned isNotDivorced {
-		require(hasDivorced[msg.sender] == false, "Spouse has already approved to divorce");
+		require(hasDivorced[msg.sender] == false, "Sender has already approved to divorce!");
 
-		// Approve to divorce by the sender
+		// Sender approved
 		hasDivorced[msg.sender] = true;
-
-		bool divorceApprovedByHusband = hasDivorced[husbandAddress];
-		bool divorceApprovedByWife = hasDivorced[wifeAddress];
 
 		emit DivorceApproved(msg.sender);
 
 		// Check if both spouses have approved to divorce
-		if (divorceApprovedByHusband && divorceApprovedByWife) {
+		if (hasDivorced[husbandAddress] && hasDivorced[wifeAddress]) {
 			divorced = true;
 			emit Divorced();
 
+			// Get the contracts balance
 			uint balance = address(this).balance;
 
+			// Split the remaining balance half-half
 			if (balance != 0) {
-				// Split the remaining balance of the contract 50:50
 				uint balancePerSpouse = balance / 2;
+
+				// Send transfer to the husband
 				husbandAddress.transfer(balancePerSpouse);
 				emit Sent(husbandAddress, balancePerSpouse);
+
+				// Send transfer to the wife
 				wifeAddress.transfer(balancePerSpouse);
 				emit Sent(wifeAddress, balancePerSpouse);
 			}
@@ -253,9 +263,8 @@ contract SmartWeddingContract {
 		uint assetCount = assets.length;
 		uint[] memory assetIds = new uint[](assetCount);
 
-		for (uint i = 1; i <= assetCount; i++) {
-			assetIds[i - 1] = i;
-		}
+		// Get all asset ids
+		for (uint i = 1; i <= assetCount; i++) { assetIds[i - 1] = i; }
 
 		return assetIds;
 	}
