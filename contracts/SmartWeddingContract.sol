@@ -23,8 +23,8 @@ contract SmartWeddingContract {
 	bool public signed = false;
 	bool public divorced = false;
 
-	mapping (address => bool) public hasSigned;
-	mapping (address => bool) public hasDivorced;
+	mapping (address => bool) hasSigned;
+	mapping (address => bool) hasDivorced;
 
 	address public husbandAddress;
 	address public wifeAddress;
@@ -156,6 +156,9 @@ contract SmartWeddingContract {
 	 */
 	function proposeAsset(string _data, uint _husbandAllocation, uint _wifeAllocation) external onlySpouse isSigned isNotDivorced {
 		require(isSameString(_data, ""), "An asset must be provided");
+		require(_husbandAllocation >= 0, "Invalid husband allocation");
+		require(_wifeAllocation >= 0, "Invalid wife allocation");
+		require((_husbandAllocation + _wifeAllocation) == 100, "Invalid allocations");
 
 		// Add a new asset and instantly approve it by the sender
 		uint id = assets.push(Asset(_data, _husbandAllocation, _wifeAllocation, false, false));
