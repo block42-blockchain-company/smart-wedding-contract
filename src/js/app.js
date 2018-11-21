@@ -6,14 +6,14 @@ App = {
 	assets: [],
 	events: [],
 
-  init: function() {
+  init: () => {
     return App.initWeb3();
   },
 
-  initWeb3: function() {
+  initWeb3: () => {
 		// Check if MetaMask is available
 		if (typeof web3 === 'undefined') {
-			showErrorModal("Bitte installiere und aktiviere MetaMask!");
+			showErrorModal(undefined, "Bitte installiere und aktiviere MetaMask!");
 			return
 		}
 
@@ -21,7 +21,7 @@ App = {
 		web3 = new Web3(App.web3Provider);
 		App.userAccount = web3.eth.accounts[0];
 
-		const walletUpdateInterval = setInterval(function() {
+		const walletUpdateInterval = setInterval(() => {
 			// Check if account has changed
 			if (web3.eth.accounts[0] !== App.userAccount) {
 				App.userAccount = web3.eth.accounts[0];
@@ -32,8 +32,8 @@ App = {
     return App.initContract();
   },
 
-  initContract: function() {
-		$.getJSON('./SmartWeddingContract.json', function(data) {
+  initContract: () => {
+		$.getJSON('./SmartWeddingContract.json', (data) => {
 			const SmartWeddingContract = data;
 
   		// Get the necessary contract artifact file and instantiate it with truffle-contract
@@ -45,8 +45,8 @@ App = {
 		});
   },
 
-	initListeners: function() {
-		$("#proposeAssetModal-range").change(function() {
+	initListeners: () => {
+		$("#proposeAssetModal-range").change(() => {
 			const value = $("#proposeAssetModal-range").val();
 			$("#proposeAssetModal-husband").val(value);
 			$("#proposeAssetModal-wife").val(100 - value);
@@ -55,10 +55,10 @@ App = {
 		return App.initPolling();
 	},
 
-	initPolling: function() {
+	initPolling: () => {
 		App.updateUi();
 
-		const frontendUpdateInterval = setInterval(function() {
+		const frontendUpdateInterval = setInterval(() => {
 			// Check if function is already declared
 			if (App.updateUi !== undefined) {
 				App.updateUi();
@@ -66,95 +66,95 @@ App = {
 		}, 3000);
 	},
 
-	updateUi: function() {
+	updateUi: () => {
 		// Check if the encryption key has already been set
-		if (localStorage.getItem("encryptionKey") === null) {
-			$('#encryptionKeyModal').modal('show');
+		if (localStorage.getItem("accessKey") === null) {
+			$('#accessKeyModal').modal('show');
 		}
 
-		App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+		App.contracts.SmartWeddingContract.deployed().then((contract) => {
 			// Update contract address and balance
-			web3.eth.getBalance(contract.address, function(error, balanceWei) {
+			web3.eth.getBalance(contract.address, (error, balanceWei) => {
 				const balance = web3.fromWei(web3.toDecimal(balanceWei));
 				$("#contract-address").text(contract.address);
 				$("#contract-balance").text(Number(balance).toFixed(4));
 			});
 
 			// Update wallet address, balance and image
-			web3.eth.getBalance(App.userAccount, function(error, balanceWei) {
+			web3.eth.getBalance(App.userAccount, (error, balanceWei) => {
 				const balance = web3.fromWei(web3.toDecimal(balanceWei));
 
 				$("#wallet-image").attr("src", addressToImageUrl(App.userAccount));
-				$("#wallet-name").text(addressToName(App.userAccount, false));
+				$("#wallet-type").text(addressToType(App.userAccount));
 				$("#wallet-address").text(App.userAccount);
 				$("#wallet-balance").text(Number(balance).toFixed(4));
 			});
 
 			// Update spouse address: husband
-			contract.husbandAddress().then(function(husbandAddress) {
+			contract.husbandAddress().then((husbandAddress) => {
 				$("#contract-husbandAddress").val(husbandAddress);
 			});
 
 			// Update spouse address: wife
-			contract.wifeAddress().then(function(wifeAddress) {
+			contract.wifeAddress().then((wifeAddress) => {
 				$("#contract-wifeAddress").val(wifeAddress);
 			});
 
 			// Update written contract ipfs link
-			contract.writtenContractIpfsHash().then(function(writtenContractIpfsHash) {
-				$("#written-contract-link").attr("href", "https://ipfs.infura.io/ipfs/" + writtenContractIpfsHash);
+			contract.writtenContractIpfsHash().then((writtenContractIpfsHash) => {
+				$("#written-contract-link").attr("href", "https://ipfs.io/ipfs/" + writtenContractIpfsHash);
 				App.writtenContractIpfsHash = writtenContractIpfsHash;
-
-				if (App.writtenContractIpfsHash.length !== 0) {
-					$("#written-contract-link").removeClass("disabled");
-				} else {
-					$("#written-contract-link").addClass("disabled");
-				}
 			});
 
 			// Update contract signed state
-			contract.signed().then(function(signed) {
-				$("#contract-signed").prop('checked', signed);
+			contract.signed().then((signed) => {
+				$("#contract-status-signed").prop('checked', signed);
 				return signed;
-			}).then(function(signed) {
+			}).then((signed) => {
 				// Update contract divorced state
-				contract.divorced().then(function(divorced) {
-					$("#contract-divorced").prop('checked', divorced);
+				contract.divorced().then((divorced) => {
+					$("#contract-status-divorced").prop('checked', divorced);
 
 					// Update action button states
 					if (divorced) {
-						$(".action-button").removeClass("btn-primary").removeClass("btn-danger").removeClass("btn-success").addClass("btn-secondary").attr("disabled", true);
+						$(".signed-action-button").attr("disabled", true);
+						$("#action-written-contract-upload").attr("disabled", true);
+						$("#action-written-contract-download").attr("disabled", false);
+						$("#action-sign-contract").attr("disabled", true);
+						$("#action-propose-asset").addClass("hidden");
 					} else if (!signed) {
-						$(".action-button").removeClass("btn-primary").addClass("btn-secondary").attr("disabled", true);
-						$("#button-proposeWrittenContract").removeClass("btn-secondary").addClass("btn-success").attr("disabled", false);
+						$(".signed-action-button").attr("disabled", true);
+						$("#action-written-contract-upload").attr("disabled", false);
 
 						if (App.writtenContractIpfsHash.length !== 0) {
-							$("#button-signContract").removeClass("btn-secondary").addClass("btn-success").attr("disabled", false);
+							$("#action-written-contract-download").attr("disabled", false);
+							$("#action-sign-contract").attr("disabled", false);
 						}
 					} else {
-						$(".action-button").removeClass("btn-secondary").addClass("btn-primary").attr("disabled", false);
-						$("#button-proposeWrittenContract").removeClass("btn-success").addClass("btn-secondary").attr("disabled", true);
-						$("#button-signContract").removeClass("btn-success").addClass("btn-secondary").attr("disabled", true);
-						$("#button-divorce").removeClass("btn-secondary").addClass("btn-danger").attr("disabled", false);
+						$(".signed-action-button").attr("disabled", false);
+						$("#action-written-contract-upload").attr("disabled", true);
+						$("#action-written-contract-download").attr("disabled", false);
+						$("#action-sign-contract").attr("disabled", true);
+						$("#action-propose-asset").removeClass("hidden");
 					}
 				});
 			});
 
 			// Check if assets should be updated
-			contract.getAssetIds().then(async function(assetIdsAsBigNumber) {
-				const assetIds = _.map(assetIdsAsBigNumber, function(assetIdAsBigNumber) { return web3.toBigNumber(assetIdAsBigNumber).toNumber() });
-				const newAssets = await Promise.all(_.map(assetIds, function(assetId) { return contract.assets(assetId - 1) }));
+			contract.getAssetIds().then(async (assetIdsAsBigNumber) => {
+				const assetIds = _.map(assetIdsAsBigNumber, (assetIdAsBigNumber) => { return web3.toBigNumber(assetIdAsBigNumber).toNumber() });
+				const newAssets = await Promise.all(_.map(assetIds, (assetId) => { return contract.assets(assetId - 1) }));
 
 				// Update assets
 				if (_.isEqual(newAssets, assets) === false) {
 					App.assets = newAssets;
 
 					$("#assets").empty();
-					$("#approveAssetModal-dropdown").empty();
-					$("#removeAssetModal-dropdown").empty();
 
-					_.each(App.assets, function (asset) {
-						let assetListItem = "<li class=\"list-group-item d-flex justify-content-between align-items-center\">__ASSET__ <span class=\"badge badge-__TYPE__\">__STATE__</span></li>";
+					_.each(App.assets, (asset) => {
+						let row = "<tr><td>__ASSET__</td><td>__HUSBAND_ALLOCATION__%</td><td>__WIFE_ALLOCATION__%</td><td><span class=\"badge badge-__TYPE__\">__STATE__</span></td><td>__ACTION__</td></tr>"
+
+						const assetId = _.indexOf(App.assets, asset) + 1;
 
 						const text = decrypt(asset[0]);
 						const husbandAllocation = asset[1];
@@ -162,32 +162,31 @@ App = {
 						const added = asset[3];
 						const removed = asset[4];
 
-						const formattedText = text + " (👨" + husbandAllocation + "% | 👩" + wifeAllocation + "%)";
+						row = row.replace("__ASSET__", text).replace("__HUSBAND_ALLOCATION__", husbandAllocation).replace("__WIFE_ALLOCATION__", wifeAllocation);
 
 						if (removed == true) {
-							assetListItem = updateAssetListItem(assetListItem, formattedText, "danger", "Entfernt");
+							row = row.replace("__TYPE__", "danger").replace("__STATE__", "Entfernt").replace("__ACTION__", "");
 						} else if (added == true) {
-							assetListItem = updateAssetListItem(assetListItem, formattedText, "success", "Hinzugefügt");
+							row = row.replace("__TYPE__", "success").replace("__STATE__", "Hinzugefügt").replace("__ACTION__", `<i class="material-icons" onclick="removeAsset(${assetId})">delete</i>`);
 						} else {
-							assetListItem = updateAssetListItem(assetListItem, formattedText, "warning", "Genehmigung ausstehend");
+							row = row.replace("__TYPE__", "warning").replace("__STATE__", "Zustimmung ausstehend").replace("__ACTION__", `<i class="material-icons" onclick="approveAsset(${assetId})">check</i>`);
 						}
 
-						const assetId = _.indexOf(App.assets, asset) + 1;
-
-						$("#assets").append(assetListItem);
-						$("#approveAssetModal-dropdown").append(new Option(text, assetId));
-						// Only append already assests which have not been removed yet
-						if (added && !removed) $("#removeAssetModal-dropdown").append(new Option(text, assetId));
+						$("#assets").append(row);
 					});
+
+					if (!_.isEmpty(App.assets)) {
+						$("#asset-table").removeClass("hidden");
+					}
 				}
 			});
 
 			// Check if events should be updated
-			contract.allEvents({ fromBlock: 0, toBlock: "latest" }).get(function (error, result) {
+			contract.allEvents({ fromBlock: 0, toBlock: "latest" }).get((error, result) => {
 				const newEvents = [];
 
-				_.each(result.reverse(), function (eventObject) {
-					newEvents.push({ args: eventObject.args, event: eventObject.event });
+				_.each(result.reverse(), (eventObject) => {
+					newEvents.push({ args: eventObject.args, event: eventObject.event, blockNumber: eventObject.blockNumber });
 				});
 
 				// Update events
@@ -196,7 +195,7 @@ App = {
 
 					$("#events").empty();
 
-					_.each(App.events, function (event) {
+					_.each(App.events, async (event) => {
 						let eventListItem = "<div class=\"alert alert-__TYPE__\" role=\"alert\">__TEXT__</div>";
 
 						const asset = decrypt(event.args["asset"]);
@@ -207,40 +206,40 @@ App = {
 
 						switch (event.event) {
 							case "WrittenContractProposed":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat einen schriftlichen Vertrag vorgeschlagen: " + ipfsHash);
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat einen schriftlichen Vertrag vorgeschlagen: " + ipfsHash);
 							break;
 							case "Signed":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat den Vertrag unterzeichnet!");
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat den Vertrag unterzeichnet!");
 							break;
 							case "ContractSigned":
 							eventListItem = updateEventListItem(eventListItem, "success", "Beide Ehepartner haben den Vertrag unterzeichnet!");
 							break;
 							case "AssetProposed":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat ein neues Asset vorgeschlagen: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat ein neues Asset vorgeschlagen: " + asset);
 							break;
 							case "AssetAddApproved":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat das Asset genehmigt: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat das Asset genehmigt: " + asset);
 							break;
 							case "AssetAdded":
-							eventListItem = updateEventListItem(eventListItem, "success", "Asset wurde hinzugefügt: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "success", "Asset hinzugefügt: " + asset);
 							break;
 							case "AssetRemoveApproved":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat dem Entfernen des Assets zugestimmt: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat dem Entfernen des Assets zugestimmt: " + asset);
 							break;
 							case "AssetRemoved":
-							eventListItem = updateEventListItem(eventListItem, "danger", "Asset wurde entfernt: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "danger", "Asset entfernt: " + asset);
 							break;
 							case "DivorceApproved":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToName(address, false) + " hat die Scheidung eingereicht!");
+							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat die Scheidung eingereicht!");
 							break;
 							case "Divorced":
 							eventListItem = updateEventListItem(eventListItem, "danger", "Beide Ehepartner haben der Scheidung zugestimmt!");
 							break;
 							case "Sent":
-							eventListItem = updateEventListItem(eventListItem, "danger", value + " ETH wurden an " + addressToName(address, true) + " gesendet!");
+							eventListItem = updateEventListItem(eventListItem, "danger", value + " ETH wurden an " + addressToType(address, true) + " gesendet!");
 							break;
 							case "Received":
-							eventListItem = updateEventListItem(eventListItem, "success", value + " ETH wurden von " + addressToName(address, true) + " empfangen!");
+							eventListItem = updateEventListItem(eventListItem, "success", value + " ETH wurden von " + addressToType(address, true) + " empfangen!");
 							break;
 						}
 
@@ -256,12 +255,34 @@ App = {
 // Main
 // ---------------------------------------------------------------------------------------------------------------------
 
-$(document).ready(function() {
+$(document).ready(() => {
   App.init();
 });
 
-$(window).on("unload", function(e) {
-	//localStorage.removeItem("encryptionKey");
+/*
+const node = new window.Ipfs();
+
+node.on('ready', () => {
+	console.log('Node is ready to use!')
+	node.stop()
+})
+
+node.on('error', error => {
+	console.error('Something went terribly wrong!', error)
+})
+
+node.on('stop', () => console.log('Node stopped!'))
+*/
+
+// ---------------------------------------------------------------------------------------------------------------------
+// UI Callbacks
+// ---------------------------------------------------------------------------------------------------------------------
+$("#action-propose-asset").click(() => {
+	$('#proposeAssetModal').modal('show');
+});
+
+$("#action-set-access-key").click(() => {
+	$('#accessKeyModal').modal('show');
 });
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -271,32 +292,32 @@ $(window).on("unload", function(e) {
 function proposeWrittenContract() {
 	const writtenContractIpfsHash = $("#proposeWrittenContractModal-hash").val();
 
-	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: Propose Written Contract -> " + writtenContractIpfsHash);
 		return contract.proposeWrittenContract(writtenContractIpfsHash, { from: App.userAccount });
-	}).then(function(result) {
+	}).then((result) => {
 		console.log(result);
 		$('#proposeWrittenContractModal').modal('hide');
 		$("#proposeWrittenContractModal-hash").val("");
-	}).catch(function(error) {
+	}).catch((error) => {
 		console.log(error);
 		$('#proposeWrittenContractModal').modal('hide');
 		$("#proposeWrittenContractModal-hash").val("");
-		showErrorModal("Das Setzen des schriftlichen Vertrags ist fehlgeschlagen!");
+		showErrorModal(error, "Das Setzen des schriftlichen Vertrags ist fehlgeschlagen!");
 	});
 }
 
 function signContract() {
-	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: Sign Contract");
 		return contract.signContract({ from: App.userAccount });
-	}).then(function(result) {
+	}).then((result) => {
 		console.log(result);
 		$('#signContractModal').modal('hide');
-	}).catch(function(error) {
+	}).catch((error) => {
 		console.log(error);
 		$('#signContractModal').modal('hide');
-		showErrorModal("Das Unterzeichnen ist fehlgeschlagen!");
+		showErrorModal(error, "Das Unterzeichnen ist fehlgeschlagen!");
 	});
 }
 
@@ -307,83 +328,68 @@ function proposeAsset() {
 
 	const encryptedAsset = encrypt(asset);
 
-	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: Propose Asset -> " + asset + " (encrypted: " + encryptedAsset + ")");
 		return contract.proposeAsset(encryptedAsset, husbandAllocation, wifeAllocation, { from: App.userAccount });
-	}).then(function(result) {
+	}).then((result) => {
 		console.log(result);
 		$('#proposeAssetModal').modal('hide');
 		$("#proposeAssetModal-asset").val("");
 		$("#proposeAssetModal-range").val(50);
 		$("#proposeAssetModal-husband").val(50);
 		$("#proposeAssetModal-wife").val(50);
-	}).catch(function(error) {
+	}).catch((error) => {
 		console.log(error);
 		$('#proposeAssetModal').modal('hide');
 		$("#proposeAssetModal-asset").val("");
 		$("#proposeAssetModal-range").val(50);
 		$("#proposeAssetModal-husband").val(50);
 		$("#proposeAssetModal-wife").val(50);
-		showErrorModal("Das Hinzufügen des Assets ist fehlgeschlagen!");
+		showErrorModal(error, "Das Hinzufügen des Assets ist fehlgeschlagen!");
 	});
 }
 
-function approveAsset() {
-	const assetId = $("#approveAssetModal-dropdown").val();
-
-	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+function approveAsset(assetId) {
+	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: Approve asset with id -> " + assetId);
 		return contract.approveAsset(assetId, { from: App.userAccount });
-	}).then(function(result) {
+	}).then((result) => {
 		console.log(result);
-		$('#approveAssetModal').modal('hide');
-		$("#approveAssetModal-assetId").val("");
 		App.updateUi();
-	}).catch(function(error) {
+	}).catch((error) => {
 		console.log(error);
-		$('#approveAssetModal').modal('hide');
-		$("#approveAssetModal-assetId").val("");
-		showErrorModal("Das Bestätigen des Assets ist fehlgeschlagen!");
+		showErrorModal(error, "Das Bestätigen des Assets ist fehlgeschlagen!");
 	});
 }
 
-function removeAsset() {
-	const assetId = $("#removeAssetModal-dropdown").val();
-
-	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+function removeAsset(assetId) {
+	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: Remove asset with id -> " + assetId);
 		return contract.removeAsset(assetId, { from: App.userAccount });
-	}).then(function(result) {
+	}).then((result) => {
 		console.log(result);
-		$('#removeAssetModal').modal('hide');
-		$("#removeAssetModal-assetId").val("");
 		App.updateUi();
-	}).catch(function(error) {
+	}).catch((error) => {
 		console.log(error);
-		$('#removeAssetModal').modal('hide');
-		$("#removeAssetModal-assetId").val("");
-		showErrorModal("Das Bestätigen der Entfernung des Assets ist fehlgeschlagen!");
+		showErrorModal(error, "Das Bestätigen der Entfernung des Assets ist fehlgeschlagen!");
 	});
 }
 
 function payIn() {
 	const amount = $("#payInModal-amount").val();
 
-	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: PayIn -> " + amount + " ETH");
-		return web3.eth.sendTransaction({ from: App.userAccount, to: contract.address, value: web3.toWei(amount) }, function(error, hash) {
+		return web3.eth.sendTransaction({ from: App.userAccount, to: contract.address, value: web3.toWei(amount) }, (error, hash) => {
 			console.log(hash);
-
-			if (error) {
-				console.log(error);
-				$('#payInModal').modal('hide');
-				$("#payInModal-amount").val("");
-				showErrorModal("Die Einzahlung ist fehlgeschlagen!");
-				return;
-			}
 
 			$('#payInModal').modal('hide');
 			$("#payInModal-amount").val("");
+
+			if (error) {
+				console.log(error);
+				showErrorModal(error, "Die Einzahlung ist fehlgeschlagen!");
+			}
 		});
 	});
 }
@@ -392,65 +398,66 @@ function pay() {
 	const address = $("#payModal-address").val();
 	const amount = $("#payModal-amount").val();
 
-	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: Pay -> " + address + ", " + amount + " ETH");
 		return contract.pay(address, web3.toWei(amount), { from: App.userAccount });
-	}).then(function(result) {
+	}).then((result) => {
 		console.log(result);
 		$('#payModal').modal('hide');
 		$("#payModal-address").val("");
 		$("#payModal-amount").val("");
-	}).catch(function(error) {
+	}).catch((error) => {
 		console.log(error);
 		$('#payModal').modal('hide');
 		$("#payModal-address").val("");
 		$("#payModal-amount").val("");
-		showErrorModal("Die Bezahlung ist fehlgeschlagen!");
+		showErrorModal(error, "Die Bezahlung ist fehlgeschlagen!");
 	});
 }
 
 function divorce() {
-	App.contracts.SmartWeddingContract.deployed().then(function(contract) {
+	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: Divorce");
 		return contract.divorce({ from: App.userAccount });
-	}).then(function(result) {
+	}).then((result) => {
 		console.log(result);
 		$('#divorceModal').modal('hide');
-	}).catch(function(error) {
+	}).catch((error) => {
 		console.log(error);
 		$('#divorceModal').modal('hide');
-		showErrorModal("Das Einreichen der Scheidung ist fehlgeschlagen!");
+		showErrorModal(error, "Das Einreichen der Scheidung ist fehlgeschlagen!");
 	});
 }
 
-function showErrorModal(message) {
+function showErrorModal(error, message) {
+	// Check if the user denied the transaction
+	if (!_.isUndefined(error.message) && error.message.includes("denied")) return;
+
 	$('#errorModalMessage').text(message);
 	$('#errorModal').modal('show');
 }
 
-function setEncryptionKey() {
-	const encryptionKey = $("#encryptionKeyModal-key").val();
-	localStorage.setItem("encryptionKey", encryptionKey);
-	$('#encryptionKeyModal').modal('hide');
-	$("#encryptionKeyModal-key").val("");
+function setAccessKey() {
+	const accessKey = $("#accessKeyModal-value").val();
+	localStorage.setItem("accessKey", accessKey);
+	$('#accessKeyModal').modal('hide');
+	$("#accessKeyModal-value").val("");
+}
+
+function downloadWrittenContract() {
+	window.open("https://ipfs.io/ipfs/" + App.writtenContractIpfsHash, "_blank");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------------------------------------------------
 
-function updateAssetListItem(htmlString, asset, type, state) {
-	return htmlString.replace("__ASSET__", asset).replace("__TYPE__", type).replace("__STATE__", state);
-}
-
 function updateEventListItem(htmlString, type, text) {
 	return htmlString.replace("__TYPE__", type).replace("__TEXT__", text);
 }
 
 function addressToImageUrl(address) {
-	if (_.isUndefined(address)) {
-		return "";
-	}
+	if (_.isUndefined(address)) return "ERROR";
 
 	let imageUrl = "./images/unknown.jpg";
 
@@ -466,19 +473,17 @@ function addressToImageUrl(address) {
 	return imageUrl;
 }
 
-function addressToName(address, useAddressIfUnknown) {
-	if (_.isUndefined(address)) {
-		return "";
-	}
+function addressToType(address, useAddressIfUnknown) {
+	if (_.isUndefined(address)) return "ERROR";
 
 	let name = useAddressIfUnknown ? address : "Unbekannt";
 
 	switch (address.toLowerCase()) {
 		case "0x48ff344581827d855a27dd4ff0742dfc88b0de7a":
-		name = "Lukas";
+		name = "Ehemann";
 		break;
 		case "0x2cce6e686960945f8eb6a392f7682e0d7e814d60":
-		name = "Julia";
+		name = "Ehefrau";
 		break;
 	}
 
@@ -486,28 +491,40 @@ function addressToName(address, useAddressIfUnknown) {
 }
 
 function encrypt(data) {
-	if (_.isUndefined(data)) return "";
+	if (_.isUndefined(data)) return "ERROR";
 
-	// Get the encryption key from the local storage
-	const encryptionKey = localStorage.getItem("encryptionKey");
+	// Get the key from the local storage
+	const accessKey = localStorage.getItem("accessKey");
 	// Encrypt data
-	return CryptoJS.AES.encrypt(data, encryptionKey).toString();
+	return CryptoJS.AES.encrypt(data, accessKey).toString();
 }
 
 function decrypt(data) {
-	if (_.isUndefined(data)) return "";
+	if (_.isUndefined(data)) return "ERROR";
 
-	// Get the encryption key from the local storage
-	const encryptionKey = localStorage.getItem("encryptionKey");
+	// Get the key from the local storage
+	const accessKey = localStorage.getItem("accessKey");
 
 	let decrypted;
 	try {
 		// Try to decrypt the data
-		decrypted = CryptoJS.AES.decrypt(data, encryptionKey).toString(CryptoJS.enc.Utf8);
+		decrypted = CryptoJS.AES.decrypt(data, accessKey).toString(CryptoJS.enc.Utf8);
 	} catch (error) {
-		decrypted = "";
+		decrypted = "ERROR";
 	}
 
 	// Fallback to '???' if encryption key is wrong
 	return decrypted.length === 0 ? "???" : decrypted;
+}
+
+function promisify(inner) {
+	return new Promise(function (resolve, reject) {
+		inner((err, res) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(res);
+			}
+		})
+	})
 }

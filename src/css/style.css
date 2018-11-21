@@ -1,20 +1,16 @@
 body {
-  background: #333333;
-}
-
-h1 {
-  margin-top: 50px;
-  margin-bottom: 20px;
-  color: #FFFFFF;
+  background-color: #212529;
+  background: url('/images/background.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
 div.row {
   margin-bottom: 30px;
 }
 
-a.disabled {
-  color: #6c757d;
-  pointer-events: none;
+a, a:hover, a:active, a:visited, a:focus {
+  color: #e91e63;
+  text-decoration: none;
 }
 
 .modal-body {
@@ -35,8 +31,72 @@ a.disabled {
   #wallet-image {
     margin-top: 30px;
   }
+
+  .navbar-brand {
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 50px;
+  }
 }
 
 .full-height {
   height: 100%;
+}
+
+.material-icons {
+  color: #474f58;
+  vertical-align: middle;
+}
+
+.btn-link {
+  text-decoration: none;
+  color: #e91e63;
+}
+
+.btn-link, .btn-link:hover, .btn-link:active, .btn-link:visited, .btn-link:focus {
+  color: #e91e63;
+  text-decoration: none;
+}
+
+.btn-link:disabled {
+  color: #333333;
+}
+
+#contract-status-divorced {
+  margin-left: 16px;
+}
+
+.card-text i {
+  margin-left: 15px;
+}
+
+.card-header i:hover, table td i:hover {
+  color: #e91e63;
+  cursor: pointer;
+}
+
+table th, table td {
+  text-align: center !important;
+}
+
+table {
+  margin-bottom: 0px !important;
+}
+
+.hidden {
+  display: none;
+}
+
+nav {
+  margin-bottom: 50px;
+}
+
+nav img {
+  width: 300px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.navbar-text {
+  color: white;
 }
