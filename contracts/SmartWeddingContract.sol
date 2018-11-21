@@ -7,18 +7,18 @@ pragma solidity 0.4.24;
  * dissolution. A multisig variant is used to consider the decision of both parties.
  */
 contract SmartWeddingContract {
-	event WrittenContractProposed(string ipfsHash, address wallet);
-	event Signed(address wallet);
-	event ContractSigned();
-	event AssetProposed(string asset, address wallet);
-	event AssetAddApproved(string asset, address wallet);
-	event AssetAdded(string asset);
-	event AssetRemoveApproved(string asset, address wallet);
-	event AssetRemoved(string asset);
-	event DivorceApproved(address wallet);
-	event Divorced();
-	event Sent(address wallet, uint amount);
-	event Received(address wallet, uint amount);
+	event WrittenContractProposed(uint timestamp, string ipfsHash, address wallet);
+	event Signed(uint timestamp, address wallet);
+	event ContractSigned(uint timestamp);
+	event AssetProposed(uint timestamp, string asset, address wallet);
+	event AssetAddApproved(uint timestamp, string asset, address wallet);
+	event AssetAdded(uint timestamp, string asset);
+	event AssetRemoveApproved(uint timestamp, string asset, address wallet);
+	event AssetRemoved(uint timestamp, string asset);
+	event DivorceApproved(uint timestamp, address wallet);
+	event Divorced(uint timestamp);
+	event Sent(uint timestamp, address wallet, uint amount);
+	event Received(uint timestamp, address wallet, uint amount);
 
 	bool public signed = false;
 	bool public divorced = false;
@@ -91,7 +91,7 @@ contract SmartWeddingContract {
 	 * @dev Default function to enable sending funds to the contract.
  	 */
 	function() external payable isSigned isNotDivorced {
-		emit Received(msg.sender, msg.value);
+		emit Received(now, msg.sender, msg.value);
 	}
 
 	/**
@@ -104,7 +104,7 @@ contract SmartWeddingContract {
 		// Update written contract ipfs hash
 		writtenContractIpfsHash = _writtenContractIpfsHash;
 
-		emit WrittenContractProposed(_writtenContractIpfsHash, msg.sender);
+		emit WrittenContractProposed(now, _writtenContractIpfsHash, msg.sender);
 
 		// Revoke previous signatures
 		if (hasSigned[husbandAddress] == true) {
@@ -125,12 +125,12 @@ contract SmartWeddingContract {
 		// Sender signed
 		hasSigned[msg.sender] = true;
 
-		emit Signed(msg.sender);
+		emit Signed(now, msg.sender);
 
 		// Check if both spouses have signed
 		if (hasSigned[husbandAddress] && hasSigned[wifeAddress]) {
 			signed = true;
-			emit ContractSigned();
+			emit ContractSigned(now);
 		}
 	}
 
@@ -141,7 +141,7 @@ contract SmartWeddingContract {
 		// Send funds to the destination address
 		_to.transfer(_amount);
 
-		emit Sent(_to, _amount);
+		emit Sent(now, _to, _amount);
 	}
 
 	/**
@@ -172,7 +172,7 @@ contract SmartWeddingContract {
 		// Instantly approve it by the sender
 		asset.hasApprovedAdd[msg.sender] = true;
 
-		emit AssetProposed(_data, msg.sender);
+		emit AssetProposed(now, _data, msg.sender);
 	}
 
 	/**
@@ -190,12 +190,12 @@ contract SmartWeddingContract {
 		// Sender approved
 		asset.hasApprovedAdd[msg.sender] = true;
 
-		emit AssetAddApproved(asset.data, msg.sender);
+		emit AssetAddApproved(now, asset.data, msg.sender);
 
 		// Check if both spouses have approved
 		if (asset.hasApprovedAdd[husbandAddress] && asset.hasApprovedAdd[wifeAddress]) {
 			asset.added = true;
-			emit AssetAdded(asset.data);
+			emit AssetAdded(now, asset.data);
 		}
 	}
 
@@ -213,12 +213,12 @@ contract SmartWeddingContract {
 		// Approve removal by the sender
 		asset.hasApprovedRemove[msg.sender] = true;
 
-		emit AssetRemoveApproved(asset.data, msg.sender);
+		emit AssetRemoveApproved(now, asset.data, msg.sender);
 
 		// Check if both spouses have approved the removal of the asset
 		if (asset.hasApprovedRemove[husbandAddress] && asset.hasApprovedRemove[wifeAddress]) {
 			asset.removed = true;
-			emit AssetRemoved(asset.data);
+			emit AssetRemoved(now, asset.data);
 		}
 	}
 
@@ -231,12 +231,12 @@ contract SmartWeddingContract {
 		// Sender approved
 		hasDivorced[msg.sender] = true;
 
-		emit DivorceApproved(msg.sender);
+		emit DivorceApproved(now, msg.sender);
 
 		// Check if both spouses have approved to divorce
 		if (hasDivorced[husbandAddress] && hasDivorced[wifeAddress]) {
 			divorced = true;
-			emit Divorced();
+			emit Divorced(now);
 
 			// Get the contracts balance
 			uint balance = address(this).balance;
@@ -247,11 +247,11 @@ contract SmartWeddingContract {
 
 				// Send transfer to the husband
 				husbandAddress.transfer(balancePerSpouse);
-				emit Sent(husbandAddress, balancePerSpouse);
+				emit Sent(now, husbandAddress, balancePerSpouse);
 
 				// Send transfer to the wife
 				wifeAddress.transfer(balancePerSpouse);
-				emit Sent(wifeAddress, balancePerSpouse);
+				emit Sent(now, wifeAddress, balancePerSpouse);
 			}
 		}
 	}
