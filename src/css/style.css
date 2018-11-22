@@ -27,18 +27,6 @@ a, a:hover, a:active, a:visited, a:focus {
   margin-bottom: 5px;
 }
 
-@media only screen and (max-width: 600px) {
-  #wallet-image {
-    margin-top: 30px;
-  }
-
-  .navbar-brand {
-    margin-left: auto;
-    margin-right: auto;
-    padding-top: 50px;
-  }
-}
-
 .full-height {
   height: 100%;
 }
@@ -104,4 +92,20 @@ nav img {
 span.time-ago {
   font-size: 0.9em;
   font-style: italic;
+}
+
+@media only screen and (max-width: 600px) {
+  #wallet-image {
+    margin-top: 30px;
+  }
+
+  .navbar-brand {
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 50px;
+  }
+
+  h1 {
+    text-align: center !important;
+  }
 }

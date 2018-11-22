@@ -208,7 +208,7 @@ App = {
 					$("#events").empty();
 
 					_.each(App.events, async (event) => {
-						let eventListItem = "<div class=\"alert alert-__TYPE__\" role=\"alert\">__TEXT__<span class=\"float-right time-ago\">__TIME__</span></div>";
+						let eventListItem = "<div class=\"alert alert-__TYPE__ text-truncate\" role=\"alert\">__TEXT__<span class=\"float-right time-ago\">__TIME__</span></div>";
 
 						const asset = decrypt(event.args["asset"]);
 						const address = event.args["wallet"];
