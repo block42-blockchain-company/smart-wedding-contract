@@ -83,6 +83,7 @@ App = {
 
 	updateUi: () => {
 		if (App.userAccount === undefined) return;
+		if (App.contracts.SmartWeddingContract === undefined) return;
 
 		App.contracts.SmartWeddingContract.deployed().then((contract) => {
 			// Update contract address and balance
