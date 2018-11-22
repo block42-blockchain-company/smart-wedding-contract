@@ -62,12 +62,12 @@ a, a:hover, a:active, a:visited, a:focus {
   color: #333333;
 }
 
-#contract-status-divorced {
-  margin-left: 16px;
+#written-contract-actions {
+  margin-bottom: .75rem;
 }
 
-.card-text i {
-  margin-left: 15px;
+#contract-actions {
+  margin-top: 20px;
 }
 
 .card-header i:hover, table td i:hover {
@@ -99,10 +99,6 @@ nav img {
 
 .navbar-text {
   color: white;
-}
-
-footer {
-  margin-bottom: 30px;
 }
 
 span.time-ago {

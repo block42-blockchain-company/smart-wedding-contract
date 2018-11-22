@@ -23,7 +23,7 @@
   <body>
     <nav class="navbar static-top">
       <div class="container">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="https://block42.tech">
           <img src="./images/brand.png" alt="block42">
         </a>
         <span class="navbar-text"><h1>Smart Wedding Contract</h1></span>
@@ -32,7 +32,7 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-6 align-self-start">
           <div class="card">
             <div class="card-header">Smart Contract</div>
             <div class="card-body">
@@ -40,8 +40,10 @@
               <p id="contract-address" class="card-text">???</p>
               <h5 class="card-title">Kontostand</h5>
               <p class="card-text"><span id="contract-balance">???</span> ETH
-                <i class="material-icons">account_balance_wallet</i><button type="button" class="signed-action-button btn btn-link" data-toggle="modal" data-target="#payInModal" disabled>Einzahlen</button>
-                <i class="material-icons">payment</i><button type="button" class="signed-action-button btn btn-link" data-toggle="modal" data-target="#payModal" disabled>Bezahlen</button>
+                <span class="float-right">
+                  <i class="material-icons">account_balance_wallet</i><button type="button" class="signed-action-button btn btn-link" data-toggle="modal" data-target="#payInModal" disabled>Einzahlen</button>
+                  <i class="material-icons">payment</i><button type="button" class="signed-action-button btn btn-link" data-toggle="modal" data-target="#payModal" disabled>Bezahlen</button>
+                </span>
               </p>
               <h5 class="card-title">Ehepartner</h5>
               <div class="input-group mb-3">
@@ -57,20 +59,20 @@
                 <input id="contract-wifeAddress" type="text" class="form-control" placeholder="???" aria-label="Wife Address" aria-describedby="basic-addon2" readonly>
               </div>
               <h5 class="card-title">Schriftlicher Vertrag</h5>
-              <i class="material-icons">cloud_upload</i><button id="action-written-contract-upload" type="button" class="btn btn-link" data-toggle="modal" data-target="#proposeWrittenContractModal" disabled>Hochladen</button>
-              <i class="material-icons">cloud_download</i><button id="action-written-contract-download" type="button" class="btn btn-link" onclick="downloadWrittenContract()" disabled>Herunterladen</button>
+              <div id="written-contract-actions">
+                <i class="material-icons">cloud_upload</i><button id="action-written-contract-upload" type="button" class="btn btn-link" data-toggle="modal" data-target="#proposeWrittenContractModal" disabled>Hochladen</button>
+                <i class="material-icons">cloud_download</i><button id="action-written-contract-download" type="button" class="btn btn-link" onclick="downloadWrittenContract()" disabled>Herunterladen</button>
+              </div>
               <h5 class="card-title">Status</h5>
-              <form class="form-inline" action="javascript:void(0);">
-                <div class="form-check">
-                  <input id="contract-status-signed" class="form-check-input" type="checkbox" value="" disabled>
-                  <label class="form-check-label" for="contract-signed">Unterzeichnet</label>
-                </div>
-                <div class="form-check">
-                  <input id="contract-status-divorced" class="form-check-input" type="checkbox" value="" disabled>
-                  <label class="form-check-label" for="contract-divorced">Geschieden</label>
-                </div>
-              </form>
-              <div class="float-right">
+              <div class="form-check">
+                <input id="contract-status-signed" class="form-check-input" type="checkbox" value="" disabled>
+                <label class="form-check-label" for="contract-signed">Unterzeichnet</label>
+              </div>
+              <div class="form-check">
+                <input id="contract-status-divorced" class="form-check-input" type="checkbox" value="" disabled>
+                <label class="form-check-label" for="contract-divorced">Geschieden</label>
+              </div>
+              <div id="contract-actions" class="float-right">
                 <i class="material-icons">edit</i><button id="action-sign-contract" type="button" class="btn btn-link" onclick="signContract()" disabled>Unterschreiben</button>
                 <i class="material-icons">call_split</i><button type="button" class="signed-action-button btn btn-link" onclick="divorce()" disabled>Scheiden</button>
               </div>
@@ -78,7 +80,7 @@
           </div>
         </div>
 
-        <div class="col-sm-6">
+        <div class="col-sm-6 align-self-end">
           <div class="text-center">
             <img id="wallet-image" src="./images/unknown.jpg" class="rounded-circle">
           </div>
@@ -134,12 +136,6 @@
         </div>
       </div>
     </div>
-
-    <footer class="footer">
-      <div class="container">
-        <span style="color:white;">© block42 Blockchain Company GmbH</span>
-      </div>
-    </footer>
 
     <!-- Modals -->
 
@@ -329,6 +325,7 @@
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@3.1.9-1/crypto-js.js" integrity="sha256-xoJklEMhY9dP0n54rQEaE9VeRnBEHNSfyfHlKkr9KNk=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.js" integrity="sha256-59IZ5dbLyByZgSsRE3Z0TjDuX7e1AiqW5bZ8Bg50dsU=" crossorigin="anonymous"></script>
     <!-- Custom -->
+    <script src="./js/config.js"></script>
     <script src="./js/app.js"></script>
   </body>
 

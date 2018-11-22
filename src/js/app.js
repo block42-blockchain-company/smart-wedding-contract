@@ -84,11 +84,6 @@ App = {
 	updateUi: () => {
 		if (App.userAccount === undefined) return;
 
-		// Check if the encryption key has already been set
-		if (localStorage.getItem("accessKey") === null) {
-			$('#accessKeyModal').modal('show');
-		}
-
 		App.contracts.SmartWeddingContract.deployed().then((contract) => {
 			// Update contract address and balance
 			web3.eth.getBalance(contract.address, (error, balanceWei) => {
@@ -107,14 +102,14 @@ App = {
 				$("#wallet-balance").text(Number(balance).toFixed(4));
 			});
 
-			// Update spouse address: husband
+			// Update spouse addresses
 			contract.husbandAddress().then((husbandAddress) => {
 				$("#contract-husbandAddress").val(husbandAddress);
+				promptForAccessKeyIfNecessary(husbandAddress);
 			});
-
-			// Update spouse address: wife
 			contract.wifeAddress().then((wifeAddress) => {
 				$("#contract-wifeAddress").val(wifeAddress);
+				promptForAccessKeyIfNecessary(wifeAddress);
 			});
 
 			// Update written contract ipfs link
@@ -437,6 +432,13 @@ $("#action-set-access-key").click(() => {
 // Helpers
 // ---------------------------------------------------------------------------------------------------------------------
 
+function promptForAccessKeyIfNecessary(address) {
+	// Check if the encryption key has already been set
+	if (localStorage.getItem("accessKey") === null && App.userAccount === address) {
+		$('#accessKeyModal').modal('show');
+	}
+}
+
 function showErrorModal(error, message) {
 	// Check if the user denied the transaction
 	if (!_.isUndefined(error.message) && error.message.includes("denied")) return;
@@ -466,10 +468,10 @@ function addressToImageUrl(address) {
 	let imageUrl = "./images/unknown.jpg";
 
 	switch (address.toLowerCase()) {
-		case "0x48ff344581827d855a27dd4ff0742dfc88b0de7a":
+		case husbandAddress:
 		imageUrl = "./images/husband.jpg";
 		break;
-		case "0x2cce6e686960945f8eb6a392f7682e0d7e814d60":
+		case wifeAddress:
 		imageUrl = "./images/wife.jpg";
 		break;
 	}
@@ -483,10 +485,10 @@ function addressToType(address, useAddressIfUnknown) {
 	let name = useAddressIfUnknown ? address : "Unbekannt";
 
 	switch (address.toLowerCase()) {
-		case "0x48ff344581827d855a27dd4ff0742dfc88b0de7a":
+		case husbandAddress:
 		name = "Ehemann";
 		break;
-		case "0x2cce6e686960945f8eb6a392f7682e0d7e814d60":
+		case wifeAddress:
 		name = "Ehefrau";
 		break;
 	}
