@@ -10,22 +10,37 @@ App = {
     return App.initWeb3();
   },
 
-  initWeb3: () => {
+  initWeb3: async () => {
 		// Check if MetaMask is available
 		if (typeof web3 === 'undefined') {
-			showErrorModal(undefined, "Bitte installiere und aktiviere MetaMask!");
+			showErrorModal(undefined, "Bitte installiere und aktiviere MetaMask! -> metamask.io");
 			return
 		}
 
-		App.web3Provider = web3.currentProvider;
-		web3 = new Web3(App.web3Provider);
-		App.userAccount = web3.eth.accounts[0];
+		// Check for new web3 provider
+		if (ethereum !== undefined) {
+			App.web3Provider = ethereum;
+		} else {
+			App.web3Provider = web3.currentProvider;
+		}
 
-		const walletUpdateInterval = setInterval(() => {
+		// Get a web3 instance
+		web3 = new Web3(App.web3Provider);
+		App.userAccount = await web3.eth.accounts[0];
+
+		// Check if MetaMask privacy mode is enabled
+		if (App.userAccount === undefined && ethereum !== undefined) {
+			await ethereum.enable();
+		}
+
+		// Check for wallet changes
+		const walletUpdateInterval = setInterval(async () => {
+			const wallet = await web3.eth.accounts[0];
 			// Check if account has changed
-			if (web3.eth.accounts[0] !== App.userAccount) {
-				App.userAccount = web3.eth.accounts[0];
+			if (wallet !== App.userAccount) {
+				App.userAccount = wallet;
 				console.log("Active wallet: " + App.userAccount);
+				if (App.updateUi !== undefined) App.updateUi();
 			}
 		}, 100);
 
@@ -67,6 +82,8 @@ App = {
 	},
 
 	updateUi: () => {
+		if (App.userAccount === undefined) return;
+
 		// Check if the encryption key has already been set
 		if (localStorage.getItem("accessKey") === null) {
 			$('#accessKeyModal').modal('show');
@@ -253,41 +270,7 @@ App = {
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------------------------------------------------
-
-$(document).ready(() => {
-  App.init();
-});
-
-/*
-const node = new window.Ipfs();
-
-node.on('ready', () => {
-	console.log('Node is ready to use!')
-	node.stop()
-})
-
-node.on('error', error => {
-	console.error('Something went terribly wrong!', error)
-})
-
-node.on('stop', () => console.log('Node stopped!'))
-*/
-
-// ---------------------------------------------------------------------------------------------------------------------
-// UI Callbacks
-// ---------------------------------------------------------------------------------------------------------------------
-$("#action-propose-asset").click(() => {
-	$('#proposeAssetModal').modal('show');
-});
-
-$("#action-set-access-key").click(() => {
-	$('#accessKeyModal').modal('show');
-});
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Smart contract functions
+// Smart contract interface
 // ---------------------------------------------------------------------------------------------------------------------
 
 function proposeWrittenContract() {
@@ -430,6 +413,30 @@ function divorce() {
 	});
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------------------------------------------------
+
+$(document).ready(() => {
+  App.init();
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// UI Callbacks
+// ---------------------------------------------------------------------------------------------------------------------
+
+$("#action-propose-asset").click(() => {
+	$('#proposeAssetModal').modal('show');
+});
+
+$("#action-set-access-key").click(() => {
+	$('#accessKeyModal').modal('show');
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------------------------------------------------
+
 function showErrorModal(error, message) {
 	// Check if the user denied the transaction
 	if (!_.isUndefined(error.message) && error.message.includes("denied")) return;
@@ -448,10 +455,6 @@ function setAccessKey() {
 function downloadWrittenContract() {
 	window.open("https://ipfs.io/ipfs/" + App.writtenContractIpfsHash, "_blank");
 }
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------------------------------------------------
 
 function updateEventListItem(htmlString, type, time, text) {
 	return htmlString.replace("__TYPE__", type).replace("__TIME__", moment(time).fromNow()).replace("__TEXT__", text);
@@ -516,16 +519,4 @@ function decrypt(data) {
 
 	// Fallback to '???' if encryption key is wrong
 	return decrypted.length === 0 ? "???" : decrypted;
-}
-
-function promisify(inner) {
-	return new Promise(function (resolve, reject) {
-		inner((err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res);
-			}
-		})
-	})
 }
