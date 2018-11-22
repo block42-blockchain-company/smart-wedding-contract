@@ -220,7 +220,7 @@ App = {
 						const amount = event.args["amount"];
 						const value = web3.fromWei(web3.toBigNumber(amount).toNumber());
 						const ipfsHash = event.args["ipfsHash"];
-						const timestamp  = event.args["timestamp"];
+						const timestamp  = web3.toBigNumber(event.args["timestamp"]).toNumber() * 1000;
 
 						switch (event.event) {
 							case "WrittenContractProposed":
