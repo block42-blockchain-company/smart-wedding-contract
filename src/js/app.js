@@ -196,50 +196,51 @@ App = {
 					$("#events").empty();
 
 					_.each(App.events, async (event) => {
-						let eventListItem = "<div class=\"alert alert-__TYPE__\" role=\"alert\">__TEXT__</div>";
+						let eventListItem = "<div class=\"alert alert-__TYPE__\" role=\"alert\">__TEXT__<span class=\"float-right time-ago\">__TIME__</span></div>";
 
 						const asset = decrypt(event.args["asset"]);
 						const address = event.args["wallet"];
 						const amount = event.args["amount"];
 						const value = web3.fromWei(web3.toBigNumber(amount).toNumber());
 						const ipfsHash = event.args["ipfsHash"];
+						const timestamp  = event.args["timestamp"];
 
 						switch (event.event) {
 							case "WrittenContractProposed":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat einen schriftlichen Vertrag vorgeschlagen: " + ipfsHash);
+							eventListItem = updateEventListItem(eventListItem, "warning", timestamp, addressToType(address, false) + " hat einen schriftlichen Vertrag vorgeschlagen: " + ipfsHash);
 							break;
 							case "Signed":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat den Vertrag unterzeichnet!");
+							eventListItem = updateEventListItem(eventListItem, "warning", timestamp, addressToType(address, false) + " hat den Vertrag unterzeichnet!");
 							break;
 							case "ContractSigned":
-							eventListItem = updateEventListItem(eventListItem, "success", "Beide Ehepartner haben den Vertrag unterzeichnet!");
+							eventListItem = updateEventListItem(eventListItem, "success", timestamp, "Beide Ehepartner haben den Vertrag unterzeichnet!");
 							break;
 							case "AssetProposed":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat ein neues Asset vorgeschlagen: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "warning", timestamp, addressToType(address, false) + " hat ein neues Asset vorgeschlagen: " + asset);
 							break;
 							case "AssetAddApproved":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat das Asset genehmigt: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "warning", timestamp, addressToType(address, false) + " hat das Asset genehmigt: " + asset);
 							break;
 							case "AssetAdded":
-							eventListItem = updateEventListItem(eventListItem, "success", "Asset hinzugefügt: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "success", timestamp, "Asset hinzugefügt: " + asset);
 							break;
 							case "AssetRemoveApproved":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat dem Entfernen des Assets zugestimmt: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "warning", timestamp, addressToType(address, false) + " hat dem Entfernen des Assets zugestimmt: " + asset);
 							break;
 							case "AssetRemoved":
-							eventListItem = updateEventListItem(eventListItem, "danger", "Asset entfernt: " + asset);
+							eventListItem = updateEventListItem(eventListItem, "danger", timestamp, "Asset entfernt: " + asset);
 							break;
 							case "DivorceApproved":
-							eventListItem = updateEventListItem(eventListItem, "warning", addressToType(address, false) + " hat die Scheidung eingereicht!");
+							eventListItem = updateEventListItem(eventListItem, "warning", timestamp, addressToType(address, false) + " hat die Scheidung eingereicht!");
 							break;
 							case "Divorced":
-							eventListItem = updateEventListItem(eventListItem, "danger", "Beide Ehepartner haben der Scheidung zugestimmt!");
+							eventListItem = updateEventListItem(eventListItem, "danger", timestamp, "Beide Ehepartner haben der Scheidung zugestimmt!");
 							break;
 							case "Sent":
-							eventListItem = updateEventListItem(eventListItem, "danger", value + " ETH wurden an " + addressToType(address, true) + " gesendet!");
+							eventListItem = updateEventListItem(eventListItem, "danger", timestamp, value + " ETH wurden an " + addressToType(address, true) + " gesendet!");
 							break;
 							case "Received":
-							eventListItem = updateEventListItem(eventListItem, "success", value + " ETH wurden von " + addressToType(address, true) + " empfangen!");
+							eventListItem = updateEventListItem(eventListItem, "success", timestamp, value + " ETH wurden von " + addressToType(address, true) + " empfangen!");
 							break;
 						}
 
@@ -452,8 +453,8 @@ function downloadWrittenContract() {
 // Helpers
 // ---------------------------------------------------------------------------------------------------------------------
 
-function updateEventListItem(htmlString, type, text) {
-	return htmlString.replace("__TYPE__", type).replace("__TEXT__", text);
+function updateEventListItem(htmlString, type, time, text) {
+	return htmlString.replace("__TYPE__", type).replace("__TIME__", moment(time).fromNow()).replace("__TEXT__", text);
 }
 
 function addressToImageUrl(address) {

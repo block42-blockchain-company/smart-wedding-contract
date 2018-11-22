@@ -100,3 +100,12 @@ nav img {
 .navbar-text {
   color: white;
 }
+
+footer {
+  margin-bottom: 30px;
+}
+
+span.time-ago {
+  font-size: 0.9em;
+  font-style: italic;
+}
