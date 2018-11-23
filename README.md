@@ -57,14 +57,7 @@ npm run dev
 
 ## Usage
 
-The smart contract is already deployed and live on both the Ethereum mainnet and testnet:
-
-#### Mainnet
-
-```solidity
-0x0
-```
-👉 find it on [Etherscan](https://etherscan.io/address/0x0#code).
+The smart contract is already deployed and can be found at:
 
 #### Testnet (Ropsten)
 
