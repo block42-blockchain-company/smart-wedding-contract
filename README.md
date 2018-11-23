@@ -1,4 +1,4 @@
-## Smart Wedding Contract
+## Smart Wedding Contract 🤵👰
 
 <div>
   <a href="#">
@@ -49,7 +49,7 @@ Compile and deploy the smart contract to the local testnet using `Truffle`:
 truffle deploy
 ```
 
-Then start the web server:
+Start the web server:
 
 ```
 npm run dev
@@ -64,16 +64,16 @@ The smart contract is already deployed and live on both the Ethereum mainnet and
 ```solidity
 0x0
 ```
-:point_right: find it on [Etherscan](https://ropsten.etherscan.io/address/0x0#code).
+👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0x0#code).
 
 #### Testnet (Ropsten)
 
 ```solidity
 0x3863fa5add6634d966d6418e7b1d49fb8468efe8
 ```
-:point_right: find it on [Etherscan](https://ropsten.etherscan.io/address/0x3863fa5add6634d966d6418e7b1d49fb8468efe8#code).
+👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0x3863fa5add6634d966d6418e7b1d49fb8468efe8#code).
 
-Feel free to install MetaMask and interact with the contract (as far as you are allowed to :wink:).
+Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
 ## Licence
 
