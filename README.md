@@ -39,16 +39,16 @@ First create a new file called `secrets.js` in the root of the project directory
 
 ```js
 module.exports = {
-	privateKeysPrivateTestnet: [
-		"dd4e...fa41" // <-- your private testnet private key
-	],
-	privateKeysRopstenTestnet: [
-		"bc35...ffd6" // <-- your ropsten testnet private key
-	],
-	privateKeysMainnet: [
-		"ba1a...336e" // <-- your mainnet private key
-	],
-	infuraApiKey: "f5db...da74" // <-- your infura api key
+  privateKeysPrivateTestnet: [
+    "dd4e...fa41" // private testnet private key
+  ],
+  privateKeysRopstenTestnet: [
+    "bc35...ffd6" // ropsten testnet private key
+  ],
+  privateKeysMainnet: [
+    "ba1a...336e" // mainnet private key
+  ],
+  infuraApiKey: "f5db...da74" // infura api key
 }
 ```
 
@@ -74,6 +74,12 @@ The smart contract is already deployed and can be found at:
 0xb586324bf62224b414849b9e77d4f57ed3f10dfe
 ```
 👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0xb586324bf62224b414849b9e77d4f57ed3f10dfe#code).
+
+#### Mainnet
+
+```solidity
+coming soon
+```
 
 Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
