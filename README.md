@@ -23,7 +23,7 @@
 
 <br />
 
-A marriage contract on Ethereum using Truffle, a plain HTML, JS + Bootstrap 4 frontend and Web3.
+A smart marriage contract on Ethereum using Truffle, a plain HTML, JS + Bootstrap 4 frontend and Web3.
 
 ## Install
 
