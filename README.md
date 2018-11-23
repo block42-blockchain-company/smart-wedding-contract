@@ -69,9 +69,9 @@ The smart contract is already deployed and live on both the Ethereum mainnet and
 #### Testnet (Ropsten)
 
 ```solidity
-0x3863fa5add6634d966d6418e7b1d49fb8468efe8
+0x76e3e8176b9af6d61f0c84e6d8f6a77c3891fa5c
 ```
-👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0x3863fa5add6634d966d6418e7b1d49fb8468efe8#code).
+👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0x76e3e8176b9af6d61f0c84e6d8f6a77c3891fa5c#code).
 
 Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
