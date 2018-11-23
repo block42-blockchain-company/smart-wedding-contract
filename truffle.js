@@ -25,7 +25,7 @@ module.exports = {
 			},
 			network_id: "*",
 			gas: 5000000,
-			gasPrice: 10000000000
+			gasPrice: 50000000000
 		},
 		ropsten: {
 			provider: function() {
@@ -35,7 +35,7 @@ module.exports = {
 			},
 			network_id: "3",
 			gas: 5000000,
-			gasPrice: 10000000000
+			gasPrice: 50000000000
 		}
 	}
 };
