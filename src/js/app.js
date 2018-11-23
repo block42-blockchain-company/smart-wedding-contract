@@ -249,10 +249,10 @@ App = {
 							case "Divorced":
 							eventListItem = updateEventListItem(eventListItem, "danger", timestamp, "Beide Ehepartner haben der Scheidung zugestimmt!");
 							break;
-							case "Sent":
+							case "FundsSent":
 							eventListItem = updateEventListItem(eventListItem, "danger", timestamp, value + " ETH wurden an " + addressToType(address, true) + " gesendet!");
 							break;
-							case "Received":
+							case "FundsReceived":
 							eventListItem = updateEventListItem(eventListItem, "success", timestamp, value + " ETH wurden von " + addressToType(address, true) + " empfangen!");
 							break;
 						}
