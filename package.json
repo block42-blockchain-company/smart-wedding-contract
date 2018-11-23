@@ -1,7 +1,7 @@
 {
   "name": "smart-wedding-contract",
   "version": "1.0.0",
-  "description": "",
+  "description": "A smart marriage contract on Ethereum.",
   "main": "truffle.js",
   "directories": {
     "test": "test"
@@ -10,11 +10,10 @@
     "dev": "lite-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Christian Lanz <christian.lanz@block42.tech>",
+  "license": "MIT",
   "devDependencies": {
     "lite-server": "^2.4.0",
-    "truffle-hdwallet-provider": "0.0.6",
     "truffle-hdwallet-provider-privkey": "^0.3.0"
   }
 }
