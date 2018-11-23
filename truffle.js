@@ -15,16 +15,13 @@
 const HDWalletProviderMnemonic = require("truffle-hdwallet-provider");
 const HDWalletProviderPrivateKey = require("truffle-hdwallet-provider-privkey");
 
-const mnemonic = require("./secrets.js").mnemonic;
-const privateKeys = require("./secrets.js").privateKeys;
-const infuraApiKey = require("./secrets.js").infuraApiKey;
-
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
   networks: {
     development: {
 			provider: function() {
+				const mnemonic = require("./secrets.js").mnemonic;
 				return new HDWalletProviderMnemonic(mnemonic, "http://127.0.0.1:8545")
 			},
       network_id: "*",
@@ -33,6 +30,8 @@ module.exports = {
     },
 		ropsten: {
 			provider: function() {
+				const privateKeys = require("./secrets.js").privateKeys;
+				const infuraApiKey = require("./secrets.js").infuraApiKey;
 				return new HDWalletProviderPrivateKey(privateKeys, "https://ropsten.infura.io/v3/" + infuraApiKey)
 			},
       network_id: "3",
