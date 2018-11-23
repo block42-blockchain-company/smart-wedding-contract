@@ -269,7 +269,7 @@ contract SmartWeddingContract {
 	/**
 	 * @dev Return a list of all asset ids.
 	 */
-	function getAssetIds() external view onlySpouse returns (uint[]) {
+	function getAssetIds() external view returns (uint[]) {
 		uint assetCount = assets.length;
 		uint[] memory assetIds = new uint[](assetCount);
 

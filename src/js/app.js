@@ -521,7 +521,7 @@ function decrypt(data) {
 		// Try to decrypt the data
 		decrypted = CryptoJS.AES.decrypt(data, accessKey).toString(CryptoJS.enc.Utf8);
 	} catch (error) {
-		decrypted = "ERROR";
+		decrypted = "???";
 	}
 
 	// Fallback to '???' if encryption key is wrong
