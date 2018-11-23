@@ -1,9 +1,7 @@
 ## Smart Wedding Contract
 
 <div>
-  <a href="#">
-    <img src="https://img.shields.io/badge/language-solidity-brightgreen.svg" alt="Language" />
-    </a>
+  <img src="https://img.shields.io/badge/language-solidity-brightgreen.svg" alt="Language" />
   <a href="https://etherscan.io">
     <img src="https://img.shields.io/badge/contract-ropsten-orange.svg" alt="Ropsten" />
   </a>
@@ -16,9 +14,7 @@
   <a href="https://t.me/block42_crypto">
     <img src="https://img.shields.io/badge/chat-telegram-0088cc.svg" alt="Telegram" />
   </a>
-  <a href="#">
-    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
-  </a>
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
 </div>
 
 <br />
