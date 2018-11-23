@@ -14,7 +14,7 @@
 
 <br />
 
-A marriage contract on Ethereum using Truffle and a plain HTML, JS + CSS frontend.
+A marriage contract on Ethereum using Truffle and a plain HTML, JS + Bootstrap 4 frontend.
 
 ## Licence
 
