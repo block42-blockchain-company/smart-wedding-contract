@@ -269,20 +269,20 @@ App = {
 // Smart contract interface
 // ---------------------------------------------------------------------------------------------------------------------
 
-function proposeWrittenContract() {
-	const writtenContractIpfsHash = $("#proposeWrittenContractModal-hash").val();
+function uploadWrittenContract() {
+	const writtenContractIpfsHash = $("#uploadWrittenContractModal-hash").val();
 
 	App.contracts.SmartWeddingContract.deployed().then((contract) => {
 		console.log("Action: Propose Written Contract -> " + writtenContractIpfsHash);
 		return contract.proposeWrittenContract(writtenContractIpfsHash, { from: App.userAccount });
 	}).then((result) => {
 		console.log(result);
-		$('#proposeWrittenContractModal').modal('hide');
-		$("#proposeWrittenContractModal-hash").val("");
+		$('#uploadWrittenContractModal').modal('hide');
+		$("#uploadWrittenContractModal-hash").val("");
 	}).catch((error) => {
 		console.log(error);
-		$('#proposeWrittenContractModal').modal('hide');
-		$("#proposeWrittenContractModal-hash").val("");
+		$('#uploadWrittenContractModal').modal('hide');
+		$("#uploadWrittenContractModal-hash").val("");
 		showErrorModal(error, "Das Setzen des schriftlichen Vertrags ist fehlgeschlagen!");
 	});
 }

@@ -60,7 +60,7 @@
               </div>
               <h5 class="card-title">Schriftlicher Vertrag</h5>
               <div id="written-contract-actions">
-                <i class="material-icons">cloud_upload</i><button id="action-written-contract-upload" type="button" class="btn btn-link" data-toggle="modal" data-target="#proposeWrittenContractModal" disabled>Hochladen</button>
+                <i class="material-icons">cloud_upload</i><button id="action-written-contract-upload" type="button" class="btn btn-link" data-toggle="modal" data-target="#uploadWrittenContractModal" disabled>Hochladen</button>
                 <i class="material-icons">cloud_download</i><button id="action-written-contract-download" type="button" class="btn btn-link" onclick="downloadWrittenContract()" disabled>Herunterladen</button>
               </div>
               <h5 class="card-title">Status</h5>
@@ -139,18 +139,18 @@
 
     <!-- Modals -->
 
-    <div class="modal fade" id="proposeWrittenContractModal" tabindex="-1" role="dialog" aria-labelledby="proposeWrittenContractModalLabel" aria-hidden="true">
+    <div class="modal fade" id="uploadWrittenContractModal" tabindex="-1" role="dialog" aria-labelledby="uploadWrittenContractModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="proposeWrittenContractModalLabel">Schriftlichen Vertrag vorschlagen</h5>
+            <h5 class="modal-title" id="uploadWrittenContractModalLabel">Schriftlichen Vertrag hochladen</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
             <div class="input-group mb-3">
-              <input id="proposeWrittenContractModal-hash" type="text" class="form-control" placeholder="Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u" aria-label="IPFS Hash" aria-describedby="basic-addon2">
+              <input id="uploadWrittenContractModal-hash" type="text" class="form-control" placeholder="Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u" aria-label="IPFS Hash" aria-describedby="basic-addon2">
               <div class="input-group-append">
                 <span class="input-group-text" id="basic-addon2">IPFS Hash</span>
               </div>
@@ -158,7 +158,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-            <button type="button" class="btn btn-primary" onclick="proposeWrittenContract()">Vorschlagen</button>
+            <button type="button" class="btn btn-primary" onclick="uploadWrittenContract()">Hochladen</button>
           </div>
         </div>
       </div>
