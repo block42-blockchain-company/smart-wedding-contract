@@ -39,7 +39,7 @@ First create a new file called `secrets.js` in the root of the project directory
 
 ```js
 module.exports = {
-	privateKeysPrivateTestnet: [
+  privateKeysPrivateTestnet: [
 		"dd4e...fa41" // <-- your private testnet private key
 	],
 	privateKeysRopstenTestnet: [
