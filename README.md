@@ -75,6 +75,12 @@ The smart contract is already deployed and can be found at:
 ```
 👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0xb586324bf62224b414849b9e77d4f57ed3f10dfe#code).
 
+#### Mainnet
+
+```solidity
+coming soon
+```
+
 Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
 ## Licence
