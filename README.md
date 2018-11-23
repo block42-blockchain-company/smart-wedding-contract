@@ -4,16 +4,16 @@
   <a href="#">
     <img src="https://img.shields.io/badge/language-solidity-brightgreen.svg" alt="Language" />
   </a>
-  <a href="https://etherscan.io">
+  <a href="https://etherscan.io" target="_blank">
     <img src="https://img.shields.io/badge/contract-ropsten-orange.svg" alt="Ropsten" />
   </a>
-  <a href="https://etherscan.io">
+  <a href="https://etherscan.io" target="_blank">
     <img src="https://img.shields.io/badge/contract-mainnet-brightgreen.svg" alt="Mainnet" />
   </a>
-  <a href="https://block42.uber.space/smart-wedding-contract/">
+  <a href="https://block42.uber.space/smart-wedding-contract/" target="_blank">
     <img src="https://img.shields.io/badge/application-live-e91e63.svg" alt="Application" />
   </a>
-  <a href="https://t.me/block42_crypto">
+  <a href="https://t.me/block42_crypto" target="_blank">
     <img src="https://img.shields.io/badge/chat-telegram-0088cc.svg" alt="Telegram" />
   </a>
   <a href="#">
@@ -64,14 +64,14 @@ The smart contract is already deployed and live on both the Ethereum mainnet and
 ```solidity
 0x0
 ```
-👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0x0#code).
+👉 find it on <a href="https://etherscan.io/address/0x0#code" target="_blank">Etherscan</a>.
 
 #### Testnet (Ropsten)
 
 ```solidity
 0x76e3e8176b9af6d61f0c84e6d8f6a77c3891fa5c
 ```
-👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0x76e3e8176b9af6d61f0c84e6d8f6a77c3891fa5c#code).
+👉 find it on <a href="https://ropsten.etherscan.io/address/0x76e3e8176b9af6d61f0c84e6d8f6a77c3891fa5c#code" target="_blank">Etherscan</a>.
 
 Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
