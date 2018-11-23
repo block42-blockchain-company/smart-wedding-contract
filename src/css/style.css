@@ -75,11 +75,12 @@ table {
 }
 
 nav {
-  margin-bottom: 50px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 nav img {
-  width: 300px;
+  width: 200px;
   padding-top: 20px;
   padding-bottom: 20px;
 }
@@ -91,6 +92,11 @@ nav img {
 span.time-ago {
   font-size: 0.9em;
   font-style: italic;
+}
+
+footer {
+  color: white;
+  margin-bottom: 30px;
 }
 
 @media only screen and (max-width: 600px) {
@@ -105,6 +111,10 @@ span.time-ago {
   }
 
   h1 {
+    text-align: center !important;
+  }
+
+  footer {
     text-align: center !important;
   }
 }
