@@ -1,7 +1,11 @@
 App = {
+	husbandAddress: "0x2baf3e0a838a54bc464c8e27195b891d02cac708",
+	wifeAddress: "0x0ed52194e69fb8cc504ba036cf7c3b72d66a3eb2",
+
   web3Provider: undefined,
   contracts: {},
 	userAccount: undefined,
+
 	writtenContractIpfsHash: "",
 	assets: [],
 	events: [],
@@ -469,10 +473,10 @@ function addressToImageUrl(address) {
 	let imageUrl = "./images/unknown.jpg";
 
 	switch (address.toLowerCase()) {
-		case husbandAddress:
+		case App.husbandAddress:
 		imageUrl = "./images/husband.jpg";
 		break;
-		case wifeAddress:
+		case App.wifeAddress:
 		imageUrl = "./images/wife.jpg";
 		break;
 	}
@@ -486,10 +490,10 @@ function addressToType(address, useAddressIfUnknown) {
 	let name = useAddressIfUnknown ? address : "Unbekannt";
 
 	switch (address.toLowerCase()) {
-		case husbandAddress:
+		case App.husbandAddress:
 		name = "Ehemann";
 		break;
-		case wifeAddress:
+		case App.wifeAddress:
 		name = "Ehefrau";
 		break;
 	}
