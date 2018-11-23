@@ -24,7 +24,7 @@ A marriage contract on Ethereum using Truffle, a plain HTML, JS + Bootstrap 4 fr
 
 ## Install
 
-Make sure `npm`, `Truffle` and `Ganache` is installed on your system. Use `npm` to download all project dependencies:
+Make sure `npm`, `Truffle` and `Ganache` is installed on your machine. Use `npm` to download all project dependencies:
 
 ```
 npm install
