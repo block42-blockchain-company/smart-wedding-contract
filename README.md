@@ -39,7 +39,16 @@ First create a new file called `secrets.js` in the root of the project directory
 
 ```js
 module.exports = {
-  mnemonic: "put your secret seed phrase here" // <-- you need to paste your e.g. MetaMask seed here
+	privateKeysPrivateTestnet: [
+		"dd4e...fa41" // <-- your private testnet private key
+	],
+	privateKeysRopstenTestnet: [
+		"bc35...ffd6" // <-- your ropsten testnet private key
+	],
+	privateKeysMainnet: [
+		"ba1a...336e" // <-- your mainnet private key
+	],
+	infuraApiKey: "f5db...da74" // <-- your infura api key
 }
 ```
 
