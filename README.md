@@ -4,7 +4,7 @@
   <a href="#">
     <img src="https://img.shields.io/badge/language-solidity-brightgreen.svg" alt="Language" />
   </a>
-  <a href="https://ropsten.etherscan.io/address/0x76e3e8176b9af6d61f0c84e6d8f6a77c3891fa5c#code">
+  <a href="https://ropsten.etherscan.io/address/0xb586324bf62224b414849b9e77d4f57ed3f10dfe#code">
     <img src="https://img.shields.io/badge/contract-ropsten-orange.svg" alt="Ropsten" />
   </a>
   <a href="https://etherscan.io">
@@ -69,9 +69,9 @@ The smart contract is already deployed and live on both the Ethereum mainnet and
 #### Testnet (Ropsten)
 
 ```solidity
-0x76e3e8176b9af6d61f0c84e6d8f6a77c3891fa5c
+0xb586324bf62224b414849b9e77d4f57ed3f10dfe
 ```
-👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0x76e3e8176b9af6d61f0c84e6d8f6a77c3891fa5c#code).
+👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0xb586324bf62224b414849b9e77d4f57ed3f10dfe#code).
 
 Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
