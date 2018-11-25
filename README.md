@@ -35,7 +35,7 @@ npm install
 
 ## Development
 
-First create a new file called `secrets.js` in the root of the project directory. The `mnemonic` is used by Truffle to deploy the contract.
+First create a new file called `secrets.js` in the root of the project directory. The privage keys are used by Truffle to deploy the contract and are not checked into the repository for obvious reasons.
 
 ```js
 module.exports = {
