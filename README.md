@@ -52,7 +52,7 @@ module.exports = {
 }
 ```
 
-Compile and deploy the smart contract to the local testnet using `Truffle`:
+Make sure there is enough ETH on the wallet to cover deployment costs. Compile and deploy the smart contract to the private testnet using `Truffle`:
 
 ```
 truffle deploy
