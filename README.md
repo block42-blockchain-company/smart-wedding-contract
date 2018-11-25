@@ -35,7 +35,7 @@ npm install
 
 ## Development
 
-First create a new file called `secrets.js` in the root of the project directory. The privage keys are used by Truffle to deploy the contract and are not checked into the repository for obvious reasons.
+First create a new file called `secrets.js` in the root of the project directory. The privage keys are used by Truffle to deploy the contract.
 
 ```js
 module.exports = {
