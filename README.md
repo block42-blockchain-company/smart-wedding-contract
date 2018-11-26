@@ -58,6 +58,12 @@ Make sure there is enough ETH on the wallet to cover deployment costs. Compile a
 truffle deploy
 ```
 
+If you only want to deploy a specific migration (e.g. to save gas):
+
+```
+truffle deploy -f <migration number> --to <migration number>
+```
+
 Start the web server:
 
 ```
