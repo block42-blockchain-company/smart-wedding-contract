@@ -86,6 +86,10 @@ The smart contract is already deployed and can be found at:
 
 Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
+### Assets
+
+Assets are stored in an encrypted format on the blockchain to ensure privacy. Ethereum does not support encryption at the moment so `CryptoJS` is used to perform client side encryption/decryption. You can access the encrypted assets on the `Ropsten` testnet using the key: `block42`
+
 ## Licence
 
 This project is licensed under the MIT license. For more information see LICENSE.md.
