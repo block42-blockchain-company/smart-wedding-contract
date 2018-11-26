@@ -98,7 +98,7 @@ contract SmartWeddingContract {
    * @dev Propose a written contract (update).
    * @param _writtenContractIpfsHash IPFS hash of the written contract PDF.
    */
-  function proposeWrittenContract(string _writtenContractIpfsHash) external onlySpouse {
+  function proposeWrittenContract(string _writtenContractIpfsHash) external onlySpouse isNotDivorced {
     require(signed == false, "Written contract ipfs hash can not be changed. Both spouses have already signed it!");
 
     // Update written contract ipfs hash
