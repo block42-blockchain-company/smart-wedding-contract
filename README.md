@@ -58,6 +58,12 @@ Make sure there is enough ETH on the wallet to cover deployment costs. Compile a
 truffle deploy
 ```
 
+If you only want to deploy a specific migration (e.g. to save gas):
+
+```
+truffle deploy -f <migration number> --to <migration number>
+```
+
 Start the web server:
 
 ```
@@ -68,13 +74,15 @@ npm run dev
 
 The smart contract is already deployed and can be found at:
 
+### Ethereum Networks
+
 #### Ropsten (Testnet)
 
 ```solidity
 0xb586324bf62224b414849b9e77d4f57ed3f10dfe
 ```
 
-👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0xb586324bf62224b414849b9e77d4f57ed3f10dfe#code).
+👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0xb586324bf62224b414849b9e77d4f57ed3f10dfe#code)
 
 #### Mainnet (Live)
 
@@ -82,7 +90,7 @@ The smart contract is already deployed and can be found at:
 0x6947335452cb7a452fc337c28cb0d597806c7672
 ```
 
-👉 find it on [Etherscan](https://etherscan.io/address/0x6947335452cb7a452fc337c28cb0d597806c7672#code).
+👉 find it on [Etherscan](https://etherscan.io/address/0x6947335452cb7a452fc337c28cb0d597806c7672#code)
 
 Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
