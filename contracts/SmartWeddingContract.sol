@@ -253,6 +253,7 @@ contract SmartWeddingContract {
 
       // Split the remaining balance half-half
       if (balance != 0) {
+        // Ignore any remainder due to low value
         uint balancePerSpouse = balance / 2;
 
         // Send transfer to the husband
