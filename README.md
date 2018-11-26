@@ -7,8 +7,8 @@
   <a href="https://ropsten.etherscan.io/address/0xb586324bf62224b414849b9e77d4f57ed3f10dfe#code">
     <img src="https://img.shields.io/badge/contract-ropsten-orange.svg" alt="Ropsten" />
   </a>
-  <a href="https://etherscan.io">
-    <img src="https://img.shields.io/badge/contract-mainnet-brightgreen.svg" alt="Mainnet" />
+  <a href="https://etherscan.io/address/0x6947335452cb7a452fc337c28cb0d597806c7672#code">
+    <img src="https://img.shields.io/badge/contract-live-brightgreen.svg" alt="Live" />
   </a>
   <a href="https://block42.uber.space/smart-wedding-contract/">
     <img src="https://img.shields.io/badge/application-live-e91e63.svg" alt="Application" />
@@ -73,13 +73,16 @@ The smart contract is already deployed and can be found at:
 ```solidity
 0xb586324bf62224b414849b9e77d4f57ed3f10dfe
 ```
+
 👉 find it on [Etherscan](https://ropsten.etherscan.io/address/0xb586324bf62224b414849b9e77d4f57ed3f10dfe#code).
 
 #### Mainnet
 
 ```solidity
-coming soon
+0x6947335452cb7a452fc337c28cb0d597806c7672
 ```
+
+👉 find it on [Etherscan](https://etherscan.io/address/0x6947335452cb7a452fc337c28cb0d597806c7672#code).
 
 Feel free to install MetaMask and interact with the contract (as far as you are allowed to 😉).
 
