@@ -198,8 +198,11 @@ App = {
         }
       });
 
+      // Narrow the block range (1 = mainnet, 3 = ropsten testnet)
+      const fromBlockNumber = web3.version.network === "1" ? 6775421 : web3.version.network === "3" ? 4489772 : 0;
+
       // Check if events should be updated
-      contract.allEvents({ fromBlock: 0, toBlock: "latest" }).get((error, result) => {
+      contract.allEvents({ fromBlock: fromBlockNumber, toBlock: "latest" }).get((error, result) => {
         const newEvents = [];
 
         _.each(result.reverse(), (eventObject) => {
