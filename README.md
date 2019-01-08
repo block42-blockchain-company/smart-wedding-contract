@@ -105,7 +105,7 @@ This project is licensed under the MIT license. For more information see LICENSE
 ```
 The MIT License
 
-Copyright (c) 2018 block42 Blockchain Company GmbH
+Copyright (c) 2019 block42 Blockchain Company GmbH
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
