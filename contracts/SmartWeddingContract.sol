@@ -67,9 +67,9 @@ contract SmartWeddingContract {
   }
 
   /**
-   * @dev Private helper function to check if a string is the same as another.
+   * @dev Private helper function to check if a string is not equal to another.
    */
-  function isSameString(string memory string1, string memory string2) private pure returns (bool) {
+  function isNotSameString(string memory string1, string memory string2) private pure returns (bool) {
     return keccak256(abi.encodePacked(string1)) != keccak256(abi.encodePacked(string2));
   }
 
@@ -119,7 +119,7 @@ contract SmartWeddingContract {
    * @dev Sign the contract.
    */
   function signContract() external onlySpouse {
-    require(isSameString(writtenContractIpfsHash, ""), "Written contract ipfs hash has been proposed yet!");
+    require(isNotSameString(writtenContractIpfsHash, ""), "Written contract ipfs hash has been proposed yet!");
     require(hasSigned[msg.sender] == false, "Spouse has already signed the contract!");
 
     // Sender signed
@@ -156,7 +156,7 @@ contract SmartWeddingContract {
    * @param _wifeAllocation Allocation of the wife.
    */
   function proposeAsset(string _data, uint _husbandAllocation, uint _wifeAllocation) external onlySpouse isSigned isNotDivorced {
-    require(isSameString(_data, ""), "No asset data provided!");
+    require(isNotSameString(_data, ""), "No asset data provided!");
     require(_husbandAllocation >= 0, "Husband allocation invalid!");
     require(_wifeAllocation >= 0, "Wife allocation invalid!");
     require((_husbandAllocation + _wifeAllocation) == 100, "Total allocation must be equal to 100%!");
