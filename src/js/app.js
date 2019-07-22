@@ -367,7 +367,7 @@ function payIn() {
 
   App.contracts.SmartWeddingContract.deployed().then((contract) => {
     console.log("Action: PayIn -> " + amount + " ETH");
-    return web3.eth.sendTransaction({ from: App.userAccount, to: contract.address, value: web3.toWei(amount) }, (error, hash) => {
+    return web3.eth.sendTransaction({ from: App.userAccount, to: contract.address, value: web3.toWei(amount), gas: "50000" }, (error, hash) => {
       console.log(hash);
 
       $('#payInModal').modal('hide');
