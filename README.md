@@ -33,6 +33,12 @@ Make sure `npm`, `Truffle` and `Ganache` is installed on your machine. Use `npm`
 npm install
 ```
 
+Also make sure you use `Truffle` with version `v4.1.15`:
+
+```
+npm install truffle@4
+```
+
 ## Development
 
 First create a new file called `secrets.js` in the root of the project directory. The privage keys are used by Truffle to deploy the contract.
