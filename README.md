@@ -48,7 +48,7 @@ module.exports = {
   privateKeysMainnet: [
     "ba1a...336e" // mainnet private key
   ],
-  infuraApiKey: "f5db...da74" // infura api key
+  infuraApiKey: "f5db...da74" // infura api key, only required for ropsten and mainnet deployment
 }
 ```
 
